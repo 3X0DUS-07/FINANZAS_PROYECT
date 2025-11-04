@@ -4,7 +4,7 @@ from src.models.item import Item, ItemCreateIn, ItemCreateOut
 from src.routes.db_session import SessionDep
 
 
-items_router = APIRouter(prefix="/items", tags=["Item"])
+items_router = APIRouter(prefix="/items", tags=["creacion y busqueda de session"])
 
 @items_router.get("/")
 def get_items(

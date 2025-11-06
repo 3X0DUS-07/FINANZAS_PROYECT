@@ -1,54 +1,80 @@
 from typing import Annotated
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
-from sqlmodel import select 
-from src.routes.db_session import SessionDep 
-from src import models 
+from jose import JWTError, jwt
 
-# --- CONFIGURACIÓN DE ADMIN ---
+# --- CONFIGURACIÓN ---
 ADMIN_USERNAME = "admin_master"
 ADMIN_ROL = "admin"
+SECRET_KEY = "my-secret"
+ALGORITHM = "HS256"
 
-# Reutilizar el esquema OAuth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-def decode_token(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    db: SessionDep 
-) -> dict:
-    """Decodifica el JWT y busca el usuario, extrayendo ID y rol."""
+
+def decode_token(token: Annotated[str, Depends(oauth2_scheme)]) -> dict:
+    """
+    Decodifica el JWT y retorna los datos del usuario.
+    NO valida contra la base de datos, solo decodifica el token.
+    """
     try:
-        data = jwt.decode(token, "my-secret", algorithms=["HS256"])
-        username = data.get("username")
-        token_rol = data.get("rol")
-        user_id = data.get("sub") # 🔑 Obtener el ID del token (sub)
-    except Exception:
-        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+        # Decodificar el token
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        
+        username: str = payload.get("username")
+        user_id_str: str = payload.get("sub")  # ✅ Ahora es string
+        email: str = payload.get("email")
+        rol: str = payload.get("rol")
+        
+        if username is None:
+            print("❌ Token sin username")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token inválido: falta username",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
+        
+        # ✅ Convertir el user_id de string a int
+        try:
+            user_id = int(user_id_str) if user_id_str is not None else 0
+        except (ValueError, TypeError):
+            print(f"❌ Error convirtiendo user_id: {user_id_str}")
+            user_id = 0
+        
+        user_dict = {
+            "username": username,
+            "email": email,
+            "id": user_id,  # ✅ Ahora es int
+            "rol": rol if rol is not None else "user"
+        }
+        
+        print(f"✅ Token decodificado exitosamente para usuario: {username} (ID: {user_id})")
+        return user_dict
+        
+    except JWTError as e:
+        print(f"❌ Error JWTError al decodificar token: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido o expirado",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    except Exception as e:
+        print(f"❌ Error inesperado al decodificar token: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Error procesando token",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
 
-    if username is None:
-        raise HTTPException(status_code=401, detail="Token inválido (sin usuario)")
 
-    # 1. Manejo del usuario Admin especial
-    if username == ADMIN_USERNAME and token_rol == ADMIN_ROL:
-        # El ID 0 es un placeholder seguro para el Admin
-        return {"username": ADMIN_USERNAME, "email": "admin@system.com", "id": 0, "rol": ADMIN_ROL}
-
-    # 2. Buscar el usuario regular en la base de datos (para verificar existencia)
-    statement = select(models.Item).where(models.Item.nombre == username)
-    user = db.exec(statement).first()
-
-    if user is None:
-        raise HTTPException(status_code=401, detail="Usuario del token no encontrado en DB")
-
-    # Retorna el diccionario con los datos, usando el ID del usuario de la DB
-    # Nota: Si el token ya tiene el 'sub' (como debe ser si se logueó correctamente), lo usamos.
-    return {"username": user.nombre, "email": user.correo, "id": user.id, "rol": user.rol}
-
-
-# --- DEPENDENCIA para verificar el Rol de Administrador ---
 def verify_admin_role(user: Annotated[dict, Depends(decode_token)]) -> bool:
-    """Verifica si el usuario autenticado tiene el rol de administrador."""
+    """Verifica si el usuario tiene rol de administrador."""
     if user.get("rol") != ADMIN_ROL:
-        raise HTTPException(status_code=403, detail="Permiso denegado: Se requiere rol de administrador.")
+        print(f"❌ Acceso denegado: usuario '{user.get('username')}' tiene rol '{user.get('rol')}', se requiere '{ADMIN_ROL}'")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permiso denegado: Se requiere rol de administrador"
+        )
+    
+    print(f"✅ Acceso admin verificado para: {user.get('username')}")
     return True

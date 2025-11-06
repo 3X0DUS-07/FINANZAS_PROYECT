@@ -54,30 +54,58 @@ def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: SessionDep 
 ):
-    """Verifica credenciales y devuelve el token de acceso, con manejo de admin."""
+    """Verifica credenciales y devuelve el token de acceso."""
+    
+    print(f"\n{'='*50}")
+    print(f"🔐 Intento de login para usuario: {form_data.username}")
+    print(f"{'='*50}")
 
-    # 1. --- MANEJO ESPECIAL DEL USUARIO ADMIN ---
+    # 1. MANEJO DEL ADMIN
     if form_data.username == ADMIN_USERNAME:
         if form_data.password == ADMIN_PASSWORD:
-            # Genera un token con el rol 'admin'
-            token = encode_token({"username": ADMIN_USERNAME, "email": "admin@system.com", "rol": ADMIN_ROL})
+            payload = {
+                "username": ADMIN_USERNAME, 
+                "email": "admin@system.com", 
+                "rol": ADMIN_ROL,
+                "sub": "0"  # ✅ CAMBIO: String en lugar de int
+            }
+            token = encode_token(payload)
+            print(f"✅ Admin login exitoso")
+            print(f"   Payload: {payload}")
+            print(f"   Token: {token[:30]}...")
             return {"access_token": token, "token_type": "bearer"}
         else:
-            raise HTTPException(status_code=400, detail="Nombre de usuario o contraseña incorrectos")
+            print("❌ Contraseña de admin incorrecta")
+            raise HTTPException(status_code=400, detail="Credenciales incorrectas")
 
-
-    # 2. --- MANEJO DE USUARIOS REGULARES (DESDE LA DB) ---
-    #admin_master
-    #super_secure_admin_password
-    
+    # 2. USUARIOS REGULARES
     statement = select(models.Item).where(models.Item.nombre == form_data.username)
     user = db.exec(statement).first()
 
-    if not user or form_data.password != user.contraseña:
-        raise HTTPException(status_code=400, detail="Nombre de usuario o contraseña incorrectos")
+    if not user:
+        print(f"❌ Usuario '{form_data.username}' no encontrado en DB")
+        raise HTTPException(status_code=400, detail="Credenciales incorrectas")
+    
+    if form_data.password != user.contraseña:
+        print(f"❌ Contraseña incorrecta para usuario '{form_data.username}'")
+        raise HTTPException(status_code=400, detail="Credenciales incorrectas")
 
-    # 💡 CAMBIO CLAVE: Incluir el ID del usuario en el token para que sea usado por decode_token
-    token = encode_token({"username": user.nombre, "email": user.correo, "rol": user.rol, "sub": user.id})
+    payload = {
+        "username": user.nombre, 
+        "email": user.correo, 
+        "rol": user.rol, 
+        "sub": str(user.id)  # ✅ CAMBIO: Convertir a string
+    }
+    
+    token = encode_token(payload)
+    
+    print(f"✅ Usuario '{user.nombre}' login exitoso")
+    print(f"   ID: {user.id}")
+    print(f"   Rol: {user.rol}")
+    print(f"   Payload: {payload}")
+    print(f"   Token: {token[:30]}...")
+    print(f"{'='*50}\n")
+    
     return {"access_token": token, "token_type": "bearer"}
 
 

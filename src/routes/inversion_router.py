@@ -45,15 +45,26 @@ def get_inversion_by_id(inversion_id: int, db: SessionDep, user: UserDep):
 def create_inversion(inversion_in: InversionCreateIn, db: SessionDep, user: UserDep):
     """Crea una nueva inversión para el usuario autenticado."""
     
+    print(f"\n{'='*50}")
+    print(f"💰 Creando inversión para usuario: {user['username']} (ID: {user['id']})")
+    print(f"   Tipo: {inversion_in.tipo_inversion}")
+    print(f"   Cantidad: {inversion_in.cantidad_inversion}")
+    print(f"{'='*50}")
+    
     # Crea la instancia del modelo de DB
     db_inversion = Inversion.model_validate(inversion_in)
     
     # Asigna el usuario_id del usuario autenticado
     db_inversion.usuario_id = user["id"]
     
+    print(f"✅ Inversión creada y asignada a usuario ID: {user['id']}")
+    
     db.add(db_inversion)
     db.commit()
     db.refresh(db_inversion)
+    
+    print(f"✅ Inversión guardada en DB con ID: {db_inversion.id}\n")
+    
     return db_inversion
 
 # --- RUTA DE ACTUALIZACIÓN (PUT) ---

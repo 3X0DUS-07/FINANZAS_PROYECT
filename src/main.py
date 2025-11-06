@@ -101,3 +101,6 @@ async def serve_admit_html():
     if ABSOLUTE_FILE_PATH.is_file():
         return FileResponse(ABSOLUTE_FILE_PATH, media_type="text/html")
     raise HTTPException(status_code=404, detail="HTML template not found")
+
+#admin_master
+#super_secure_admin_password

@@ -84,7 +84,6 @@ def update_item(
 def delete_item(
     item_id: int,
     db: SessionDep,
-    # 🔐 Solo Admin puede hacer DELETE
     is_admin: Annotated[bool, Depends(verify_admin_role)]
 ):
     """Elimina un ítem por ID. Requiere rol de administrador."""
@@ -92,8 +91,24 @@ def delete_item(
     db_item = db.get(Item, item_id)
     if not db_item:
         raise HTTPException(status_code=404, detail="Item no encontrado")
-        
+    
+    # ✅ NUEVO: Primero eliminar todas las inversiones del usuario
+    from src.models.inversion import Inversion
+    from src.models.gasto import Gasto
+    
+    inversiones_statement = select(Inversion).where(Inversion.usuario_id == item_id)
+    inversiones = db.exec(inversiones_statement).all()
+    for inversion in inversiones:
+        db.delete(inversion)
+    
+    # ✅ NUEVO: Eliminar todos los gastos del usuario
+    gastos_statement = select(Gasto).where(Gasto.usuario_id == item_id)
+    gastos = db.exec(gastos_statement).all()
+    for gasto in gastos:
+        db.delete(gasto)
+    
+    # Ahora sí eliminar el usuario
     db.delete(db_item)
     db.commit()
-    # Retorna una respuesta sin contenido (204)
+    
     return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -28,7 +28,11 @@ typing_extensions==4.15.0
 urllib3==2.5.0
 uvicorn==0.38.0
 yarg==0.1.10
+<<<<<<< HEAD
 python-dateutil
 google-generativeai
 python-dotenv
 sqlmodel[all]
+=======
+python-dateutil
+>>>>>>> 8ba65dd5f8f07687b7d491415161295d2b9537f9

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanzApp - Iniciar Sesión</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <div class="coin">💰</div>
+            <div class="loading-text">Cargando FinanzApp...</div>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div class="login-container">
+        <div class="login-left">
+            <div class="brand-section">
+                <div class="logo-animated">
+                    <span class="logo-icon">💎</span>
+                    <h1 class="brand-name">FinanzApp</h1>
+                </div>
+                <p class="brand-tagline">Tu futuro financiero comienza aquí</p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span>Análisis detallado</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💸</span>
+                        <span>Control de gastos</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📈</span>
+                        <span>Seguimiento de inversiones</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🎯</span>
+                        <span>Metas financieras</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="login-right">
+            <div class="login-form-container">
+                <h2 class="form-title">Iniciar Sesión</h2>
+                <p class="form-subtitle">Accede a tu cuenta para gestionar tus finanzas</p>
+                
+                <form id="login-form" class="login-form">
+                    <div class="input-group">
+                        <label for="username">Usuario</label>
+                        <input type="text" id="username" name="username" placeholder="Ingresa tu usuario" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary btn-login">
+                        <span class="btn-text">Iniciar Sesión</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                    
+                    <div class="form-footer">
+                        <p>¿No tienes cuenta? <a href="/register">Regístrate aquí</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/auth.js"></script>
+</body>
+</html>

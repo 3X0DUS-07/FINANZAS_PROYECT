@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanzApp - Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-small">
+                <span class="logo-icon">💎</span>
+                <span class="logo-text">FinanzApp</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-section="overview">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Resumen</span>
+            </a>
+            <a href="#" class="nav-item" data-section="inversiones">
+                <span class="nav-icon">📈</span>
+                <span class="nav-text">Inversiones</span>
+            </a>
+            <a href="#" class="nav-item" data-section="gastos">
+                <span class="nav-icon">💸</span>
+                <span class="nav-text">Gastos</span>
+            </a>
+            <a href="#" class="nav-item" data-section="analisis">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Análisis</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">👤</div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-username">Usuario</div>
+                    <div class="user-role" id="sidebar-role">user</div>
+                </div>
+            </div>
+            <button class="btn-logout" id="logout-btn">
+                <span>Cerrar Sesión</span>
+                <span>🚪</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1 class="page-title" id="page-title">Resumen General</h1>
+                <p class="page-subtitle" id="page-subtitle">Vista general de tus finanzas</p>
+            </div>
+            <div class="header-right">
+                <div class="header-stats">
+                    <div class="stat-badge balance-badge" id="header-balance">
+                        <span class="stat-label">Balance</span>
+                        <span class="stat-value">$0</span>
+                    </div>
+                </div>
+                <!-- Botón flotante del chatbot -->
+                <button class="btn-chat-float" id="chat-toggle-btn" title="Asistente IA">
+                    <span>🤖</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Overview Section -->
+        <section id="overview-section" class="content-section active">
+            <div class="cards-grid">
+                <div class="stat-card stat-card-primary">
+                    <div class="stat-card-icon">💰</div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">Total Inversiones</div>
+                        <div class="stat-card-value" id="total-inversiones">$0</div>
+                        <div class="stat-card-change positive">+0% este mes</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-card-danger">
+                    <div class="stat-card-icon">💸</div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">Total Gastos</div>
+                        <div class="stat-card-value" id="total-gastos">$0</div>
+                        <div class="stat-card-change negative">-0% este mes</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-card-success">
+                    <div class="stat-card-icon">📊</div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">Balance</div>
+                        <div class="stat-card-value" id="balance">$0</div>
+                        <div class="stat-card-change" id="ahorro-badge">0% de ahorro</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-card-info">
+                    <div class="stat-card-icon">🎯</div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-label">Porcentaje Ahorro</div>
+                        <div class="stat-card-value" id="porcentaje-ahorro">0%</div>
+                        <div class="stat-card-change">Meta: 20%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3 class="chart-title">Distribución de Gastos</h3>
+                    <div id="gastos-chart" class="chart-placeholder">
+                        <div class="no-data">No hay datos disponibles</div>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3 class="chart-title">Distribución de Inversiones</h3>
+                    <div id="inversiones-chart" class="chart-placeholder">
+                        <div class="no-data">No hay datos disponibles</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Inversiones Section -->
+        <section id="inversiones-section" class="content-section">
+            <div class="section-header">
+                <button class="btn-primary" id="add-inversion-btn">
+                    <span>➕</span>
+                    <span>Nueva Inversión</span>
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table" id="inversiones-table">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inversiones-tbody">
+                        <tr class="empty-state">
+                            <td colspan="5">No hay inversiones registradas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Gastos Section -->
+        <section id="gastos-section" class="content-section">
+            <div class="section-header">
+                <button class="btn-primary" id="add-gasto-btn">
+                    <span>➕</span>
+                    <span>Nuevo Gasto</span>
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table" id="gastos-table">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gastos-tbody">
+                        <tr class="empty-state">
+                            <td colspan="5">No hay gastos registrados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Análisis Section -->
+        <section id="analisis-section" class="content-section">
+            <div class="analysis-filters">
+                <select id="analysis-period" class="filter-select">
+                    <option value="general">Todo el tiempo</option>
+                    <option value="mensual">Mes actual</option>
+                    <option value="trimestral">Últimos 3 meses</option>
+                </select>
+            </div>
+            
+            <div class="analysis-content" id="analysis-content">
+                <p class="text-center">Selecciona un período para ver el análisis</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Chatbot -->
+    <div id="chat-modal" class="modal-chat">
+        <div class="chat-modal-content">
+            <div class="chat-modal-header">
+                <h3>🤖 Asistente Financiero IA</h3>
+                <button class="chat-modal-close" id="chat-close-btn">&times;</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message bot-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-text">¡Hola! Soy tu asistente financiero IA. ¿En qué puedo ayudarte hoy?</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Escribe tu pregunta aquí..." class="chat-input">
+                <button id="chat-send" class="btn-send">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar inversión -->
+    <div id="inversion-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="inversion-modal-title">Nueva Inversión</h3>
+                <button class="modal-close" data-modal="inversion-modal">&times;</button>
+            </div>
+            <form id="inversion-form" class="modal-form">
+                <input type="hidden" id="inversion-id">
+                <div class="input-group">
+                    <label for="tipo-inversion">Tipo</label>
+                    <input type="text" id="tipo-inversion" required placeholder="Ej: trabajo, arriendo, negocio">
+                </div>
+                <div class="input-group">
+                    <label for="cantidad-inversion">Cantidad</label>
+                    <input type="number" id="cantidad-inversion" required placeholder="0.00" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="fecha-inversion">Fecha</label>
+                    <input type="date" id="fecha-inversion" required>
+                </div>
+                <div class="input-group">
+                    <label for="descripcion-inversion">Descripción</label>
+                    <textarea id="descripcion-inversion" rows="3" placeholder="Detalles adicionales..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" data-modal="inversion-modal">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar gasto -->
+    <div id="gasto-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="gasto-modal-title">Nuevo Gasto</h3>
+                <button class="modal-close" data-modal="gasto-modal">&times;</button>
+            </div>
+            <form id="gasto-form" class="modal-form">
+                <input type="hidden" id="gasto-id">
+                <div class="input-group">
+                    <label for="tipo-gasto">Tipo</label>
+                    <input type="text" id="tipo-gasto" required placeholder="Ej: comida, transporte, servicios">
+                </div>
+                <div class="input-group">
+                    <label for="cantidad-gasto">Cantidad</label>
+                    <input type="number" id="cantidad-gasto" required placeholder="0.00" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="fecha-gasto">Fecha</label>
+                    <input type="date" id="fecha-gasto" required>
+                </div>
+                <div class="input-group">
+                    <label for="descripcion-gasto">Descripción</label>
+                    <textarea id="descripcion-gasto" rows="3" placeholder="Detalles adicionales..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" data-modal="gasto-modal">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/navigation.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/inversiones.js"></script>
+    <script src="/static/js/gastos.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanzApp - Registro</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <div class="coin">💰</div>
+            <div class="loading-text">Cargando FinanzApp...</div>
+        </div>
+    </div>
+
+    <!-- Register Screen -->
+    <div class="login-container">
+        <div class="login-left">
+            <div class="brand-section">
+                <div class="logo-animated">
+                    <span class="logo-icon">💎</span>
+                    <h1 class="brand-name">FinanzApp</h1>
+                </div>
+                <p class="brand-tagline">Únete y toma control de tus finanzas</p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">🚀</span>
+                        <span>Empieza gratis</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔒</span>
+                        <span>Datos seguros</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📱</span>
+                        <span>Acceso desde cualquier lugar</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💡</span>
+                        <span>Asistente IA incluido</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="login-right">
+            <div class="login-form-container">
+                <h2 class="form-title">Crear Cuenta</h2>
+                <p class="form-subtitle">Comienza tu viaje hacia la libertad financiera</p>
+                
+                <form id="register-form" class="login-form">
+                    <div class="input-group">
+                        <label for="reg-username">Nombre de usuario</label>
+                        <input type="text" id="reg-username" placeholder="Elige un usuario" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="reg-email">Correo electrónico</label>
+                        <input type="email" id="reg-email" placeholder="tu@email.com" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="reg-password">Contraseña</label>
+                        <input type="password" id="reg-password" placeholder="Crea una contraseña segura" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary btn-login">
+                        <span class="btn-text">Crear Cuenta</span>
+                        <span class="btn-icon">✓</span>
+                    </button>
+                    
+                    <div class="form-footer">
+                        <p>¿Ya tienes cuenta? <a href="/">Inicia sesión</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/register.js"></script>
+</body>
+</html>

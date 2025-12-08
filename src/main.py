@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
 from sqlmodel import SQLModel, select
 from src.routes.db_session import SessionDep
-from src.config.db import engine
+from config.db import engine
 from src import models
 from src.routes.item_router import items_router
 from src.routes.inversion_router import inversion_router
@@ -31,7 +31,7 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 # --- CONFIGURACIÓN DE RUTAS ---
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = BASE_DIR / "templates"
-ABSOLUTE_FILE_PATH = TEMPLATES_DIR / "admit.html"
+ABSOLUTE_FILE_PATH = TEMPLATES_DIR / "register.html"
 
 # --- CONFIGURACIÓN DEL ADMIN ---
 ADMIN_PASSWORD = "super_secure_admin_password"

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanzApp - Inversiones</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-small">
+                <span class="logo-icon">💎</span>
+                <span class="logo-text">Smart Finance</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Resumen</span>
+            </a>
+            <a href="inversiones.html" class="nav-item active">
+                <span class="nav-icon">📈</span>
+                <span class="nav-text">Inversiones</span>
+            </a>
+            <a href="gastos.html" class="nav-item">
+                <span class="nav-icon">💸</span>
+                <span class="nav-text">Gastos</span>
+            </a>
+            <a href="analisis.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Análisis</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">👤</div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-username">Usuario</div>
+                    <div class="user-role" id="sidebar-role">user</div>
+                </div>
+            </div>
+            <button class="btn-logout" id="logout-btn">
+                <span>Cerrar Sesión</span>
+                <span>🚪</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1 class="page-title">Gestión de Inversiones</h1>
+                <p class="page-subtitle">Administra tus ingresos y fuentes de capital</p>
+            </div>
+            <div class="header-right">
+                <div class="header-stats">
+                    <div class="stat-badge">
+                        <span class="stat-label">Total Inversiones</span>
+                        <span class="stat-value" id="total-inversiones-header">$0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="cards-grid" style="margin-bottom: 2rem;">
+            <div class="stat-card stat-card-success">
+                <div class="stat-card-icon">💰</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Total Acumulado</div>
+                    <div class="stat-card-value" id="total-acumulado">$0</div>
+                    <div class="stat-card-change positive">Todo el tiempo</div>
+                </div>
+            </div>
+            
+            <div class="stat-card stat-card-info">
+                <div class="stat-card-icon">📊</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Este Mes</div>
+                    <div class="stat-card-value" id="total-mes">$0</div>
+                    <div class="stat-card-change">Mes actual</div>
+                </div>
+            </div>
+            
+            <div class="stat-card stat-card-primary">
+                <div class="stat-card-icon">📈</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Promedio Mensual</div>
+                    <div class="stat-card-value" id="promedio-mensual">$0</div>
+                    <div class="stat-card-change">Últimos 6 meses</div>
+                </div>
+            </div>
+            
+            <div class="stat-card stat-card-success">
+                <div class="stat-card-icon">🎯</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Total Registros</div>
+                    <div class="stat-card-value" id="total-registros">0</div>
+                    <div class="stat-card-change">Inversiones</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="section-header">
+            <button class="btn-primary" id="add-inversion-btn">
+                <span>➕</span>
+                <span>Nueva Inversión</span>
+            </button>
+            <div style="display: flex; gap: 1rem;">
+                <input type="text" id="search-input" placeholder="Buscar por tipo o descripción..." 
+                       style="width: 300px; padding: 0.75rem; background: var(--bg-tertiary); border: 2px solid transparent; border-radius: 8px; color: var(--text-primary);">
+                <select id="filter-tipo" style="padding: 0.75rem; background: var(--bg-tertiary); border: 2px solid transparent; border-radius: 8px; color: var(--text-primary);">
+                    <option value="">Todos los tipos</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Table -->
+        <div class="table-container">
+            <table class="data-table" id="inversiones-table">
+                <thead>
+                    <tr>
+                        <th style="cursor: pointer;" data-sort="tipo">Tipo <span>⇅</span></th>
+                        <th style="cursor: pointer;" data-sort="cantidad">Cantidad <span>⇅</span></th>
+                        <th style="cursor: pointer;" data-sort="fecha">Fecha <span>⇅</span></th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="inversiones-tbody">
+                    <tr class="empty-state">
+                        <td colspan="5">
+                            <div style="text-align: center; padding: 3rem;">
+                                <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
+                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
+                                    No hay inversiones registradas
+                                </div>
+                                <div style="color: var(--text-secondary);">
+                                    Comienza agregando tu primera inversión
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem; display: none;">
+            <button id="prev-page" class="btn-secondary" disabled>← Anterior</button>
+            <span id="page-info" style="color: var(--text-secondary);">Página 1 de 1</span>
+            <button id="next-page" class="btn-secondary" disabled>Siguiente →</button>
+        </div>
+    </main>
+
+    <!-- Modal para agregar/editar inversión -->
+    <div id="inversion-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="inversion-modal-title">Nueva Inversión</h3>
+                <button class="modal-close" data-modal="inversion-modal">&times;</button>
+            </div>
+            <form id="inversion-form" class="modal-form">
+                <input type="hidden" id="inversion-id">
+                
+                <div class="input-group">
+                    <label for="tipo-inversion">Tipo de Inversión *</label>
+                    <input type="text" id="tipo-inversion" required placeholder="Ej: trabajo, arriendo, negocio" list="tipo-suggestions">
+                    <datalist id="tipo-suggestions">
+                        <option value="trabajo">
+                        <option value="arriendo">
+                        <option value="negocio">
+                        <option value="venta">
+                        <option value="freelance">
+                        <option value="dividendos">
+                    </datalist>
+                </div>
+                
+                <div class="input-group">
+                    <label for="cantidad-inversion">Cantidad *</label>
+                    <input type="number" id="cantidad-inversion" required placeholder="0.00" step="0.01" min="0">
+                    <div id="cantidad-error" class="validation-error" style="display: none;"></div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="fecha-inversion">Fecha *</label>
+                    <input type="date" id="fecha-inversion" required>
+                    <div id="fecha-error" class="validation-error" style="display: none;"></div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="descripcion-inversion">Descripción</label>
+                    <textarea id="descripcion-inversion" rows="3" placeholder="Detalles adicionales... (opcional)"></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" data-modal="inversion-modal">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="submit-btn">
+                        <span id="submit-text">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Confirmar Eliminación</h3>
+                <button class="modal-close" data-modal="delete-modal">&times;</button>
+            </div>
+            <div class="modal-form" style="padding: 1.5rem;">
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    ¿Estás seguro de que deseas eliminar esta inversión? Esta acción no se puede deshacer.
+                </p>
+                <div class="modal-footer" style="border-top: none; padding-top: 0;">
+                    <button type="button" class="btn-secondary" data-modal="delete-modal">Cancelar</button>
+                    <button type="button" class="btn-primary" id="confirm-delete-btn" style="background: var(--danger);">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        let token = null;
+        let currentUser = null;
+        let allInversiones = [];
+        let filteredInversiones = [];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let sortField = 'fecha';
+        let sortDirection = 'desc';
+        let deleteInversionId = null;
+
+        // Verificar autenticación
+        function checkAuth() {
+            token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return false;
+            }
+            return true;
+        }
+
+        // Fetch autenticado
+        async function authenticatedFetch(url, options = {}) {
+            return fetch(url, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Formatear moneda
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Formatear fecha
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return new Intl.DateFormat('es-CO').format(date);
+        }
+
+        // Cargar perfil
+        async function loadUserProfile() {
+            try {
+                const response = await authenticatedFetch(`${API_BASE_URL}/users/profile`);
+                if (!response.ok) throw new Error('Error al cargar perfil');
+                currentUser = await response.json();
+                document.getElementById('sidebar-username').textContent = currentUser.username;
+                document.getElementById('sidebar-role').textContent = currentUser.rol || 'user';
+            } catch (error) {
+                localStorage.removeItem('token');
+                window.location.href = '/';
+            }
+        }
+
+        // Cargar inversiones
+        async function loadInversiones() {
+            try {
+                const response = await authenticatedFetch(`${API_BASE_URL}/inversiones/`);
+                if (!response.ok) throw new Error('Error al cargar inversiones');
+                
+                allInversiones = await response.json();
+                updateStats();
+                updateTipoFilter();
+                applyFilters();
+                
+            } catch (error) {
+                showToast('Error al cargar inversiones', 'error');
+            }
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const total = allInversiones.reduce((sum, inv) => sum + inv.cantidad_inversion, 0);
+            document.getElementById('total-acumulado').textContent = formatCurrency(total);
+            document.getElementById('total-inversiones-header').textContent = formatCurrency(total);
+            document.getElementById('total-registros').textContent = allInversiones.length;
+
+            // Total del mes
+            const now = new Date();
+            const mesActual = allInversiones.filter(inv => {
+                const fecha = new Date(inv.fecha_inversion);
+                return fecha.getMonth() === now.getMonth() && fecha.getFullYear() === now.getFullYear();
+            });
+            const totalMes = mesActual.reduce((sum, inv) => sum + inv.cantidad_inversion, 0);
+            document.getElementById('total-mes').textContent = formatCurrency(totalMes);
+
+            // Promedio mensual últimos 6 meses
+            const seisM = new Date();
+            seisM.setMonth(seisM.getMonth() - 6);
+            const ultimos6 = allInversiones.filter(inv => new Date(inv.fecha_inversion) >= seisM);
+            const promedio = ultimos6.length > 0 ? ultimos6.reduce((sum, inv) => sum + inv.cantidad_inversion, 0) / 6 : 0;
+            document.getElementById('promedio-mensual').textContent = formatCurrency(promedio);
+        }
+
+        // Actualizar filtro de tipos
+        function updateTipoFilter() {
+            const tipos = [...new Set(allInversiones.map(inv => inv.tipo_inversion))];
+            const select = document.getElementById('filter-tipo');
+            select.innerHTML = '<option value="">Todos los tipos</option>';
+            tipos.forEach(tipo => {
+                const option = document.createElement('option');
+                option.value = tipo;
+                option.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+                select.appendChild(option);
+            });
+        }
+
+        // Aplicar filtros
+        function applyFilters() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const tipo = document.getElementById('filter-tipo').value;
+
+            filteredInversiones = allInversiones.filter(inv => {
+                const matchSearch = inv.tipo_inversion.toLowerCase().includes(search) || 
+                                  (inv.descripcion && inv.descripcion.toLowerCase().includes(search));
+                const matchTipo = !tipo || inv.tipo_inversion === tipo;
+                return matchSearch && matchTipo;
+            });
+
+            sortInversiones();
+            currentPage = 1;
+            renderTable();
+        }
+
+        // Ordenar inversiones
+        function sortInversiones() {
+            filteredInversiones.sort((a, b) => {
+                let aVal, bVal;
+                if (sortField === 'tipo') {
+                    aVal = a.tipo_inversion;
+                    bVal = b.tipo_inversion;
+                } else if (sortField === 'cantidad') {
+                    aVal = a.cantidad_inversion;
+                    bVal = b.cantidad_inversion;
+                } else if (sortField === 'fecha') {
+                    aVal = new Date(a.fecha_inversion);
+                    bVal = new Date(b.fecha_inversion);
+                }
+
+                if (sortDirection === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+        }
+
+        // Renderizar tabla
+        function renderTable() {
+            const tbody = document.getElementById('inversiones-tbody');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageItems = filteredInversiones.slice(start, end);
+
+            if (pageItems.length === 0) {
+                tbody.innerHTML = `
+                    <tr class="empty-state">
+                        <td colspan="5">
+                            <div style="text-align: center; padding: 3rem;">
+                                <div style="font-size: 4rem; margin-bottom: 1rem;">🔍</div>
+                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
+                                    No se encontraron inversiones
+                                </div>
+                                <div style="color: var(--text-secondary);">
+                                    Intenta ajustar los filtros de búsqueda
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            pageItems.forEach(inv => {
+                html += `
+                    <tr>
+                        <td style="text-transform: capitalize; font-weight: 600;">${inv.tipo_inversion}</td>
+                        <td style="color: var(--success); font-weight: 600;">${formatCurrency(inv.cantidad_inversion)}</td>
+                        <td>${formatDate(inv.fecha_inversion)}</td>
+                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${inv.descripcion || '-'}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon btn-edit" onclick="editInversion(${inv.id})" title="Editar">✏️</button>
+                                <button class="btn-icon btn-delete" onclick="confirmDelete(${inv.id})" title="Eliminar">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+
+            // Paginación
+            const totalPages = Math.ceil(filteredInversiones.length / itemsPerPage);
+            if (totalPages > 1) {
+                document.getElementById('pagination').style.display = 'flex';
+                document.getElementById('page-info').textContent = `Página ${currentPage} de ${totalPages}`;
+                document.getElementById('prev-page').disabled = currentPage === 1;
+                document.getElementById('next-page').disabled = currentPage === totalPages;
+            } else {
+                document.getElementById('pagination').style.display = 'none';
+            }
+        }
+
+        // Mostrar modal de agregar
+        function showAddModal() {
+            document.getElementById('inversion-modal-title').textContent = 'Nueva Inversión';
+            document.getElementById('inversion-form').reset();
+            document.getElementById('inversion-id').value = '';
+            document.getElementById('fecha-inversion').value = new Date().toISOString().split('T')[0];
+            document.getElementById('submit-text').textContent = 'Guardar';
+            openModal('inversion-modal');
+        }
+
+        // Editar inversión
+        async function editInversion(id) {
+            try {
+                const response = await authenticatedFetch(`${API_BASE_URL}/inversiones/${id}`);
+                if (!response.ok) throw new Error('Error al cargar inversión');
+                
+                const inv = await response.json();
+                document.getElementById('inversion-modal-title').textContent = 'Editar Inversión';
+                document.getElementById('inversion-id').value = inv.id;
+                document.getElementById('tipo-inversion').value = inv.tipo_inversion;
+                document.getElementById('cantidad-inversion').value = inv.cantidad_inversion;
+                document.getElementById('fecha-inversion').value = inv.fecha_inversion;
+                document.getElementById('descripcion-inversion').value = inv.descripcion || '';
+                document.getElementById('submit-text').textContent = 'Actualizar';
+                openModal('inversion-modal');
+                
+            } catch (error) {
+                showToast('Error al cargar inversión', 'error');
+            }
+        }
+
+        // Confirmar eliminación
+        function confirmDelete(id) {
+            deleteInversionId = id;
+            openModal('delete-modal');
+        }
+
+        // Eliminar inversión
+        async function deleteInversion() {
+            try {
+                const response = await authenticatedFetch(`${API_BASE_URL}/inversiones/${deleteInversionId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Error al eliminar');
+                
+                closeModal('delete-modal');
+                loadInversiones();
+                showToast('Inversión eliminada correctamente', 'success');
+                
+            } catch (error) {
+                showToast('Error al eliminar inversión', 'error');
+            }
+        }
+
+        // Guardar inversión
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('inversion-id').value;
+            const data = {
+                tipo_inversion: document.getElementById('tipo-inversion').value.trim(),
+                cantidad_inversion: parseFloat(document.getElementById('cantidad-inversion').value),
+                fecha_inversion: document.getElementById('fecha-inversion').value,
+                descripcion: document.getElementById('descripcion-inversion').value.trim() || null
+            };
+
+            // Validaciones
+            if (data.cantidad_inversion <= 0) {
+                showToast('La cantidad debe ser mayor a cero', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            document.getElementById('submit-text').textContent = 'Guardando...';
+
+            try {
+                const url = id ? `${API_BASE_URL}/inversiones/${id}` : `${API_BASE_URL}/inversiones/`;
+                const method = id ? 'PUT' : 'POST';
+                
+                const response = await authenticatedFetch(url, {
+                    method,
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error('Error al guardar');
+
+                closeModal('inversion-modal');
+                loadInversiones();
+                showToast(id ? 'Inversión actualizada' : 'Inversión creada', 'success');
+
+            } catch (error) {
+                showToast('Error al guardar inversión', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                document.getElementById('submit-text').textContent = id ? 'Actualizar' : 'Guardar';
+            }
+        }
+
+        // Modales
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Logout
+        function handleLogout() {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkAuth()) return;
+            
+            loadUserProfile();
+            loadInversiones();
+
+            // Event listeners
+            document.getElementById('add-inversion-btn').addEventListener('click', showAddModal);
+            document.getElementById('inversion-form').addEventListener('submit', handleSubmit);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            document.getElementById('search-input').addEventListener('input', applyFilters);
+            document.getElementById('filter-tipo').addEventListener('change', applyFilters);
+            document.getElementById('confirm-delete-btn').addEventListener('click', deleteInversion);
+
+            // Cerrar modales
+            document.querySelectorAll('.modal-close, .btn-secondary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modalId = this.dataset.modal || this.closest('.modal').id;
+                    if (modalId) closeModal(modalId);
+                });
+            });
+
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal(modal.id);
+                });
+            });
+
+            // Ordenamiento
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const field = th.dataset.sort;
+                    if (sortField === field) {
+                        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortField = field;
+                        sortDirection = 'desc';
+                    }
+                    applyFilters();
+                });
+            });
+
+            // Paginación
+            document.getElementById('prev-page').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+
+            document.getElementById('next-page').addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredInversiones.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+        });
+
+        // Hacer funciones globales
+        window.editInversion = editInversion;
+        window.confirmDelete = confirmDelete;
+    </script>
+</body>
+</html>

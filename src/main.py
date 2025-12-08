@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
 from sqlmodel import SQLModel, select
 from src.routes.db_session import SessionDep
-from config.db import engine
+from src.config.db import engine
 from src import models
 from src.routes.item_router import items_router
 from src.routes.inversion_router import inversion_router

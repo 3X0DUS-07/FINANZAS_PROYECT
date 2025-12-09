@@ -18,19 +18,19 @@
         </div>
         
         <nav class="sidebar-nav">
-            <a href="/dashboard" class="nav-item active" data-section="overview">
+            <a href="#" class="nav-item active" onclick="window.location.href='/dashboard'; return false;">
                 <span class="nav-icon">🏠</span>
                 <span class="nav-text">Resumen</span>
             </a>
-            <a href="/inversiones" class="nav-item" data-section="inversiones">
+            <a href="#" class="nav-item" onclick="window.location.href='/inversiones'; return false;">
                 <span class="nav-icon">📈</span>
                 <span class="nav-text">Inversiones</span>
             </a>
-            <a href="/gastos" class="nav-item" data-section="gastos">
+            <a href="#" class="nav-item" onclick="window.location.href='/gastos'; return false;">
                 <span class="nav-icon">💸</span>
                 <span class="nav-text">Gastos</span>
             </a>
-            <a href="/analisis" class="nav-item" data-section="analisis">
+            <a href="#" class="nav-item" onclick="window.location.href='/analisis'; return false;">
                 <span class="nav-icon">📊</span>
                 <span class="nav-text">Análisis</span>
             </a>
@@ -56,8 +56,8 @@
         <!-- Header -->
         <header class="dashboard-header">
             <div class="header-left">
-                <h1 class="page-title" id="page-title">Resumen General</h1>
-                <p class="page-subtitle" id="page-subtitle">Vista general de tus finanzas</p>
+                <h1 class="page-title">Resumen General</h1>
+                <p class="page-subtitle">Vista general de tus finanzas</p>
             </div>
             <div class="header-right">
                 <div class="header-stats">
@@ -73,135 +73,88 @@
             </div>
         </header>
 
-        <!-- Overview Section -->
-        <section id="overview-section" class="content-section active">
-            <div class="cards-grid">
-                <div class="stat-card stat-card-primary">
-                    <div class="stat-card-icon">💰</div>
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">Total Inversiones</div>
-                        <div class="stat-card-value" id="total-inversiones">$0</div>
-                        <div class="stat-card-change positive">+0% este mes</div>
-                    </div>
+        <!-- Stats Cards -->
+        <div class="cards-grid">
+            <div class="stat-card stat-card-primary">
+                <div class="stat-card-icon">💰</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Total Inversiones</div>
+                    <div class="stat-card-value" id="total-inversiones">$0</div>
+                    <div class="stat-card-change positive">+0% este mes</div>
                 </div>
-                
-                <div class="stat-card stat-card-danger">
-                    <div class="stat-card-icon">💸</div>
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">Total Gastos</div>
-                        <div class="stat-card-value" id="total-gastos">$0</div>
-                        <div class="stat-card-change negative">-0% este mes</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card stat-card-success">
-                    <div class="stat-card-icon">📊</div>
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">Balance</div>
-                        <div class="stat-card-value" id="balance">$0</div>
-                        <div class="stat-card-change" id="ahorro-badge">0% de ahorro</div>
-                    </div>
-                </div>
-                
-                <div class="stat-card stat-card-info">
-                    <div class="stat-card-icon">🎯</div>
-                    <div class="stat-card-content">
-                        <div class="stat-card-label">Porcentaje Ahorro</div>
-                        <div class="stat-card-value" id="porcentaje-ahorro">0%</div>
-                        <div class="stat-card-change">Meta: 20%</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="charts-container">
-                <div class="chart-card">
-                    <h3 class="chart-title">Distribución de Gastos</h3>
-                    <div id="gastos-chart" class="chart-placeholder">
-                        <div class="no-data">No hay datos disponibles</div>
-                    </div>
-                </div>
-                
-                <div class="chart-card">
-                    <h3 class="chart-title">Distribución de Inversiones</h3>
-                    <div id="inversiones-chart" class="chart-placeholder">
-                        <div class="no-data">No hay datos disponibles</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Inversiones Section -->
-        <section id="inversiones-section" class="content-section">
-            <div class="section-header">
-                <button class="btn-primary" id="add-inversion-btn">
-                    <span>➕</span>
-                    <span>Nueva Inversión</span>
-                </button>
             </div>
             
-            <div class="table-container">
-                <table class="data-table" id="inversiones-table">
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Cantidad</th>
-                            <th>Fecha</th>
-                            <th>Descripción</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inversiones-tbody">
-                        <tr class="empty-state">
-                            <td colspan="5">No hay inversiones registradas</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Gastos Section -->
-        <section id="gastos-section" class="content-section">
-            <div class="section-header">
-                <button class="btn-primary" id="add-gasto-btn">
-                    <span>➕</span>
-                    <span>Nuevo Gasto</span>
-                </button>
+            <div class="stat-card stat-card-danger">
+                <div class="stat-card-icon">💸</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Total Gastos</div>
+                    <div class="stat-card-value" id="total-gastos">$0</div>
+                    <div class="stat-card-change negative">-0% este mes</div>
+                </div>
             </div>
             
-            <div class="table-container">
-                <table class="data-table" id="gastos-table">
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Cantidad</th>
-                            <th>Fecha</th>
-                            <th>Descripción</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gastos-tbody">
-                        <tr class="empty-state">
-                            <td colspan="5">No hay gastos registrados</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Análisis Section -->
-        <section id="analisis-section" class="content-section">
-            <div class="analysis-filters">
-                <select id="analysis-period" class="filter-select">
-                    <option value="general">Todo el tiempo</option>
-                    <option value="mensual">Mes actual</option>
-                    <option value="trimestral">Últimos 3 meses</option>
-                </select>
+            <div class="stat-card stat-card-success">
+                <div class="stat-card-icon">📊</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Balance</div>
+                    <div class="stat-card-value" id="balance">$0</div>
+                    <div class="stat-card-change" id="ahorro-badge">0% de ahorro</div>
+                </div>
             </div>
             
-            <div class="analysis-content" id="analysis-content">
-                <p class="text-center">Selecciona un período para ver el análisis</p>
+            <div class="stat-card stat-card-info">
+                <div class="stat-card-icon">🎯</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Porcentaje Ahorro</div>
+                    <div class="stat-card-value" id="porcentaje-ahorro">0%</div>
+                    <div class="stat-card-change">Meta: 20%</div>
+                </div>
             </div>
-        </section>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3 class="chart-title">Distribución de Gastos</h3>
+                <div id="gastos-chart" class="chart-placeholder">
+                    <div class="no-data">No hay datos disponibles</div>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title">Distribución de Inversiones</h3>
+                <div id="inversiones-chart" class="chart-placeholder">
+                    <div class="no-data">No hay datos disponibles</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+            <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='/inversiones'">
+                <div class="stat-card-icon">➕</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Nueva Inversión</div>
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Registra un nuevo ingreso</div>
+                </div>
+            </div>
+            
+            <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='/gastos'">
+                <div class="stat-card-icon">➖</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Nuevo Gasto</div>
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Registra un nuevo egreso</div>
+                </div>
+            </div>
+            
+            <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='/analisis'">
+                <div class="stat-card-icon">📊</div>
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Ver Análisis</div>
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Reportes detallados</div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Modal Chatbot -->
@@ -226,127 +179,333 @@
         </div>
     </div>
 
-    <!-- Modal para agregar/editar inversión -->
-    <div id="inversion-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="inversion-modal-title">Nueva Inversión</h3>
-                <button class="modal-close" data-modal="inversion-modal">&times;</button>
-            </div>
-            <form id="inversion-form" class="modal-form">
-                <input type="hidden" id="inversion-id">
-                <div class="input-group">
-                    <label for="tipo-inversion">Tipo</label>
-                    <input type="text" id="tipo-inversion" required placeholder="Ej: trabajo, arriendo, negocio">
-                </div>
-                <div class="input-group">
-                    <label for="cantidad-inversion">Cantidad</label>
-                    <input type="number" id="cantidad-inversion" required placeholder="0.00" step="0.01">
-                </div>
-                <div class="input-group">
-                    <label for="fecha-inversion">Fecha</label>
-                    <input type="date" id="fecha-inversion" required>
-                </div>
-                <div class="input-group">
-                    <label for="descripcion-inversion">Descripción</label>
-                    <textarea id="descripcion-inversion" rows="3" placeholder="Detalles adicionales..."></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary" data-modal="inversion-modal">Cancelar</button>
-                    <button type="submit" class="btn-primary">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal para agregar/editar gasto -->
-    <div id="gasto-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="gasto-modal-title">Nuevo Gasto</h3>
-                <button class="modal-close" data-modal="gasto-modal">&times;</button>
-            </div>
-            <form id="gasto-form" class="modal-form">
-                <input type="hidden" id="gasto-id">
-                <div class="input-group">
-                    <label for="tipo-gasto">Tipo</label>
-                    <input type="text" id="tipo-gasto" required placeholder="Ej: comida, transporte, servicios">
-                </div>
-                <div class="input-group">
-                    <label for="cantidad-gasto">Cantidad</label>
-                    <input type="number" id="cantidad-gasto" required placeholder="0.00" step="0.01">
-                </div>
-                <div class="input-group">
-                    <label for="fecha-gasto">Fecha</label>
-                    <input type="date" id="fecha-gasto" required>
-                </div>
-                <div class="input-group">
-                    <label for="descripcion-gasto">Descripción</label>
-                    <textarea id="descripcion-gasto" rows="3" placeholder="Detalles adicionales..."></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary" data-modal="gasto-modal">Cancelar</button>
-                    <button type="submit" class="btn-primary">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
 
-    <!-- Scripts -->
-    <script src="/static/js/utils.js"></script>
-    <script src="/static/js/api.js"></script>
-    <script src="/static/js/navigation.js"></script>
-    <script src="/static/js/dashboard.js"></script>
-    <script src="/static/js/inversiones.js"></script>
-    <script src="/static/js/gastos.js"></script>
-    <script src="/static/js/chat.js"></script>
-    <script src="/static/js/main.js"></script>
-    
     <script>
-        // Script adicional para asegurar que el logout funcione
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Dashboard cargado');
-            
-            // Verificar token al cargar
-            const token = localStorage.getItem('token');
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        let token = null;
+        let currentUser = null;
+
+        // Verificar autenticación
+        function checkAuth() {
+            token = localStorage.getItem('token');
             if (!token) {
                 console.log('❌ No hay token, redirigiendo a login...');
                 window.location.href = '/';
-                return;
+                return false;
             }
             console.log('✅ Token encontrado');
-            
-            // Configurar botón de logout
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    console.log('🚪 Cerrando sesión...');
+            return true;
+        }
+
+        // Fetch autenticado
+        async function authenticatedFetch(url, options = {}) {
+            return fetch(url, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Formatear moneda
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Obtener color por categoría
+        function getColorForCategory(category) {
+            const colors = {
+                'comida': '#10b981',
+                'transporte': '#3b82f6',
+                'servicios': '#f59e0b',
+                'entretenimiento': '#8b5cf6',
+                'salud': '#ef4444',
+                'educación': '#6366f1',
+                'ropa': '#ec4899',
+                'hogar': '#14b8a6',
+                'trabajo': '#6366f1',
+                'negocio': '#14b8a6',
+                'arriendo': '#ec4899',
+                'default': '#64748b'
+            };
+            return colors[category.toLowerCase()] || colors['default'];
+        }
+
+        // Cargar perfil
+        async function loadUserProfile() {
+            try {
+                const response = await authenticatedFetch(`${API_BASE_URL}/users/profile`);
+                if (!response.ok) throw new Error('Error al cargar perfil');
+                currentUser = await response.json();
+                
+                const usernameEl = document.getElementById('sidebar-username');
+                const roleEl = document.getElementById('sidebar-role');
+                
+                if (usernameEl) usernameEl.textContent = currentUser.username;
+                if (roleEl) roleEl.textContent = currentUser.rol || 'user';
+                
+                return currentUser;
+            } catch (error) {
+                console.error('❌ Error cargando perfil:', error);
+                localStorage.removeItem('token');
+                window.location.href = '/';
+            }
+        }
+
+        // Cargar datos del dashboard
+        async function loadDashboardData() {
+            try {
+                const resumenResponse = await authenticatedFetch(`${API_BASE_URL}/analisis/resumen-general`);
+                
+                if (resumenResponse.ok) {
+                    const resumen = await resumenResponse.json();
                     
-                    // Eliminar token
-                    localStorage.removeItem('token');
-                    console.log('✅ Token eliminado');
+                    document.getElementById('total-inversiones').textContent = formatCurrency(resumen.total_inversiones);
+                    document.getElementById('total-gastos').textContent = formatCurrency(resumen.total_gastos);
+                    document.getElementById('balance').textContent = formatCurrency(resumen.balance);
+                    document.getElementById('porcentaje-ahorro').textContent = `${resumen.porcentaje_ahorro}%`;
                     
-                    // Mostrar mensaje
-                    const toast = document.getElementById('toast');
-                    if (toast) {
-                        toast.textContent = 'Sesión cerrada correctamente';
-                        toast.className = 'toast success show';
-                        setTimeout(() => toast.classList.remove('show'), 2000);
+                    const headerBalance = document.getElementById('header-balance');
+                    if (headerBalance) {
+                        headerBalance.querySelector('.stat-value').textContent = formatCurrency(resumen.balance);
                     }
                     
-                    // Redirigir al login
-                    setTimeout(() => {
-                        console.log('🔄 Redirigiendo a login...');
-                        window.location.href = '/';
-                    }, 1000);
+                    const ahorroBadge = document.getElementById('ahorro-badge');
+                    ahorroBadge.textContent = `${resumen.porcentaje_ahorro}% de ahorro`;
+                    ahorroBadge.className = 'stat-card-change';
+                    if (resumen.porcentaje_ahorro > 0) {
+                        ahorroBadge.classList.add('positive');
+                    } else {
+                        ahorroBadge.classList.add('negative');
+                    }
+                }
+                
+                const gastosResponse = await authenticatedFetch(`${API_BASE_URL}/analisis/gastos-por-tipo`);
+                if (gastosResponse.ok) {
+                    const gastos = await gastosResponse.json();
+                    renderGastosChart(gastos);
+                }
+                
+                const inversionesResponse = await authenticatedFetch(`${API_BASE_URL}/analisis/inversiones-por-tipo`);
+                if (inversionesResponse.ok) {
+                    const inversiones = await inversionesResponse.json();
+                    renderInversionesChart(inversiones);
+                }
+                
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+            }
+        }
+
+        // Renderizar gráfico de gastos
+        function renderGastosChart(data) {
+            const chartContainer = document.getElementById('gastos-chart');
+            
+            if (!data || data.length === 0) {
+                chartContainer.innerHTML = '<div class="no-data">No hay datos disponibles</div>';
+                return;
+            }
+            
+            let html = '<div class="chart-bars" style="padding: 20px;">';
+            
+            data.forEach(item => {
+                const percentage = item.porcentaje;
+                const color = getColorForCategory(item.tipo_gasto);
+                
+                html += `
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-weight: 600; text-transform: capitalize;">${item.tipo_gasto}</span>
+                            <span style="color: var(--text-secondary);">${formatCurrency(item.total)} (${percentage.toFixed(1)}%)</span>
+                        </div>
+                        <div style="background: var(--bg-dark); height: 24px; border-radius: 12px; overflow: hidden;">
+                            <div style="background: ${color}; height: 100%; width: ${percentage}%; transition: width 1s ease;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            chartContainer.innerHTML = html;
+        }
+
+        // Renderizar gráfico de inversiones
+        function renderInversionesChart(data) {
+            const chartContainer = document.getElementById('inversiones-chart');
+            
+            if (!data || data.length === 0) {
+                chartContainer.innerHTML = '<div class="no-data">No hay datos disponibles</div>';
+                return;
+            }
+            
+            let html = '<div class="chart-bars" style="padding: 20px;">';
+            
+            data.forEach(item => {
+                const percentage = item.porcentaje;
+                const color = getColorForCategory(item.tipo_inversion);
+                
+                html += `
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-weight: 600; text-transform: capitalize;">${item.tipo_inversion}</span>
+                            <span style="color: var(--text-secondary);">${formatCurrency(item.total)} (${percentage.toFixed(1)}%)</span>
+                        </div>
+                        <div style="background: var(--bg-dark); height: 24px; border-radius: 12px; overflow: hidden;">
+                            <div style="background: ${color}; height: 100%; width: ${percentage}%; transition: width 1s ease;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            chartContainer.innerHTML = html;
+        }
+
+        // Configurar chatbot
+        function setupChatbot() {
+            const chatModal = document.getElementById('chat-modal');
+            const chatToggleBtn = document.getElementById('chat-toggle-btn');
+            const chatCloseBtn = document.getElementById('chat-close-btn');
+            const chatSendBtn = document.getElementById('chat-send');
+            const chatInput = document.getElementById('chat-input');
+            
+            if (!chatModal || !chatToggleBtn) return;
+            
+            chatToggleBtn.addEventListener('click', () => {
+                chatModal.classList.add('active');
+                chatInput.focus();
+            });
+            
+            if (chatCloseBtn) {
+                chatCloseBtn.addEventListener('click', () => {
+                    chatModal.classList.remove('active');
                 });
+            }
+            
+            if (chatSendBtn) {
+                chatSendBtn.addEventListener('click', sendChatMessage);
+            }
+            
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendChatMessage();
+                    }
+                });
+            }
+            
+            chatModal.addEventListener('click', (e) => {
+                if (e.target === chatModal) {
+                    chatModal.classList.remove('active');
+                }
+            });
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addChatMessage(message, 'user');
+            input.value = '';
+            input.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error en el chat');
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    addChatMessage(`Error: ${data.error}. ${data.suggestion || ''}`, 'bot');
+                } else {
+                    addChatMessage(data.reply, 'bot');
+                }
+                
+            } catch (error) {
+                addChatMessage('Lo siento, hubo un error procesando tu mensaje. Por favor intenta de nuevo.', 'bot');
+            } finally {
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        function addChatMessage(text, type) {
+            const messagesContainer = document.getElementById('chat-messages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type}-message`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = type === 'bot' ? '🤖' : '👤';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            
+            const textDiv = document.createElement('div');
+            textDiv.className = 'message-text';
+            textDiv.textContent = text;
+            
+            content.appendChild(textDiv);
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Logout
+        function handleLogout() {
+            console.log('🚪 Cerrando sesión...');
+            localStorage.removeItem('token');
+            showToast('Sesión cerrada correctamente', 'success');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 500);
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Dashboard cargado');
+            
+            if (!checkAuth()) return;
+            
+            await loadUserProfile();
+            setupChatbot();
+            loadDashboardData();
+            
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
                 console.log('✅ Logout configurado');
-            } else {
-                console.error('❌ Botón de logout no encontrado');
             }
         });
     </script>

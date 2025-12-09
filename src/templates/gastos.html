@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinanzApp - Gastos</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -18,19 +18,19 @@
         </div>
         
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">
+            <a href="#" class="nav-item" onclick="window.location.href='/dashboard'; return false;">
                 <span class="nav-icon">🏠</span>
                 <span class="nav-text">Resumen</span>
             </a>
-            <a href="inversiones.html" class="nav-item">
+            <a href="#" class="nav-item" onclick="window.location.href='/inversiones'; return false;">
                 <span class="nav-icon">📈</span>
                 <span class="nav-text">Inversiones</span>
             </a>
-            <a href="gastos.html" class="nav-item active">
+            <a href="#" class="nav-item active" onclick="window.location.href='/gastos'; return false;">
                 <span class="nav-icon">💸</span>
                 <span class="nav-text">Gastos</span>
             </a>
-            <a href="analisis.html" class="nav-item">
+            <a href="#" class="nav-item" onclick="window.location.href='/analisis'; return false;">
                 <span class="nav-icon">📊</span>
                 <span class="nav-text">Análisis</span>
             </a>
@@ -255,7 +255,6 @@
         let sortDirection = 'desc';
         let deleteGastoId = null;
 
-        // Verificar autenticación
         function checkAuth() {
             token = localStorage.getItem('token');
             if (!token) {
@@ -265,7 +264,6 @@
             return true;
         }
 
-        // Fetch autenticado
         async function authenticatedFetch(url, options = {}) {
             return fetch(url, {
                 ...options,
@@ -277,7 +275,6 @@
             });
         }
 
-        // Toast
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -285,7 +282,6 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Formatear moneda
         function formatCurrency(amount) {
             return new Intl.NumberFormat('es-CO', {
                 style: 'currency',
@@ -294,13 +290,11 @@
             }).format(amount);
         }
 
-        // Formatear fecha
         function formatDate(dateString) {
             const date = new Date(dateString);
             return new Intl.DateFormat('es-CO').format(date);
         }
 
-        // Obtener color por categoría
         function getColorForCategory(category) {
             const colors = {
                 'comida': '#10b981',
@@ -315,7 +309,6 @@
             return colors[category.toLowerCase()] || '#64748b';
         }
 
-        // Cargar perfil
         async function loadUserProfile() {
             try {
                 const response = await authenticatedFetch(`${API_BASE_URL}/users/profile`);
@@ -329,31 +322,30 @@
             }
         }
 
-        // Cargar gastos
         async function loadGastos() {
             try {
                 const response = await authenticatedFetch(`${API_BASE_URL}/gastos/`);
                 if (!response.ok) throw new Error('Error al cargar gastos');
                 
                 allGastos = await response.json();
+                console.log('Gastos cargados:', allGastos);
                 updateStats();
                 updateTipoFilter();
                 renderCategoriasChart();
                 applyFilters();
                 
             } catch (error) {
+                console.error('Error:', error);
                 showToast('Error al cargar gastos', 'error');
             }
         }
 
-        // Actualizar estadísticas
         function updateStats() {
             const total = allGastos.reduce((sum, g) => sum + g.cantidad_gasto, 0);
             document.getElementById('total-acumulado').textContent = formatCurrency(total);
             document.getElementById('total-gastos-header').textContent = formatCurrency(total);
             document.getElementById('total-registros').textContent = allGastos.length;
 
-            // Total del mes
             const now = new Date();
             const mesActual = allGastos.filter(g => {
                 const fecha = new Date(g.fecha_gasto);
@@ -362,7 +354,6 @@
             const totalMes = mesActual.reduce((sum, g) => sum + g.cantidad_gasto, 0);
             document.getElementById('total-mes').textContent = formatCurrency(totalMes);
 
-            // Promedio mensual últimos 6 meses
             const seisM = new Date();
             seisM.setMonth(seisM.getMonth() - 6);
             const ultimos6 = allGastos.filter(g => new Date(g.fecha_gasto) >= seisM);
@@ -370,7 +361,6 @@
             document.getElementById('promedio-mensual').textContent = formatCurrency(promedio);
         }
 
-        // Renderizar gráfico de categorías
         function renderCategoriasChart() {
             const now = new Date();
             const mesActual = allGastos.filter(g => {
@@ -415,7 +405,6 @@
             chartContainer.innerHTML = html;
         }
 
-        // Actualizar filtro de tipos
         function updateTipoFilter() {
             const tipos = [...new Set(allGastos.map(g => g.tipo_gasto))];
             const select = document.getElementById('filter-tipo');
@@ -428,7 +417,6 @@
             });
         }
 
-        // Aplicar filtros
         function applyFilters() {
             const search = document.getElementById('search-input').value.toLowerCase();
             const tipo = document.getElementById('filter-tipo').value;
@@ -445,7 +433,6 @@
             renderTable();
         }
 
-        // Ordenar gastos
         function sortGastos() {
             filteredGastos.sort((a, b) => {
                 let aVal, bVal;
@@ -468,12 +455,13 @@
             });
         }
 
-        // Renderizar tabla
         function renderTable() {
             const tbody = document.getElementById('gastos-tbody');
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
             const pageItems = filteredGastos.slice(start, end);
+
+            console.log('Renderizando tabla con', pageItems.length, 'items');
 
             if (pageItems.length === 0) {
                 tbody.innerHTML = `
@@ -516,7 +504,6 @@
             });
             tbody.innerHTML = html;
 
-            // Paginación
             const totalPages = Math.ceil(filteredGastos.length / itemsPerPage);
             if (totalPages > 1) {
                 document.getElementById('pagination').style.display = 'flex';
@@ -528,7 +515,6 @@
             }
         }
 
-        // Mostrar modal de agregar
         function showAddModal() {
             document.getElementById('gasto-modal-title').textContent = 'Nuevo Gasto';
             document.getElementById('gasto-form').reset();
@@ -538,7 +524,6 @@
             openModal('gasto-modal');
         }
 
-        // Editar gasto
         async function editGasto(id) {
             try {
                 const response = await authenticatedFetch(`${API_BASE_URL}/gastos/${id}`);
@@ -559,13 +544,11 @@
             }
         }
 
-        // Confirmar eliminación
         function confirmDelete(id) {
             deleteGastoId = id;
             openModal('delete-modal');
         }
 
-        // Eliminar gasto
         async function deleteGasto() {
             try {
                 const response = await authenticatedFetch(`${API_BASE_URL}/gastos/${deleteGastoId}`, {
@@ -583,7 +566,6 @@
             }
         }
 
-        // Guardar gasto
         async function handleSubmit(e) {
             e.preventDefault();
             
@@ -627,7 +609,6 @@
             }
         }
 
-        // Modales
         function openModal(id) {
             document.getElementById(id).classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -638,20 +619,17 @@
             document.body.style.overflow = '';
         }
 
-        // Logout
         function handleLogout() {
             localStorage.removeItem('token');
             window.location.href = '/';
         }
 
-        // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
             if (!checkAuth()) return;
             
             loadUserProfile();
             loadGastos();
 
-            // Event listeners
             document.getElementById('add-gasto-btn').addEventListener('click', showAddModal);
             document.getElementById('gasto-form').addEventListener('submit', handleSubmit);
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
@@ -659,7 +637,6 @@
             document.getElementById('filter-tipo').addEventListener('change', applyFilters);
             document.getElementById('confirm-delete-btn').addEventListener('click', deleteGasto);
 
-            // Cerrar modales
             document.querySelectorAll('.modal-close, .btn-secondary').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const modalId = this.dataset.modal || this.closest('.modal').id;
@@ -673,7 +650,6 @@
                 });
             });
 
-            // Ordenamiento
             document.querySelectorAll('th[data-sort]').forEach(th => {
                 th.addEventListener('click', () => {
                     const field = th.dataset.sort;
@@ -687,7 +663,6 @@
                 });
             });
 
-            // Paginación
             document.getElementById('prev-page').addEventListener('click', () => {
                 if (currentPage > 1) {
                     currentPage--;
@@ -704,7 +679,6 @@
             });
         });
 
-        // Hacer funciones globales
         window.editGasto = editGasto;
         window.confirmDelete = confirmDelete;
     </script>

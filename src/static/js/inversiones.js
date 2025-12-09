@@ -73,7 +73,7 @@ function formatCurrency(amount) {
  */
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return new Intl.DateFormat('es-CO').format(date);
+    return new Intl.DateTimeFormat('es-CO').format(date);
 }
 
 /**

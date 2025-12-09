@@ -66,8 +66,9 @@ function formatCurrency(amount) {
 // Formatear fecha
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return new Intl.DateFormat('es-CO').format(date);
+    return new Intl.DateTimeFormat('es-CO').format(date);
 }
+
 
 // Obtener fecha actual en formato YYYY-MM-DD
 function getCurrentDate() {

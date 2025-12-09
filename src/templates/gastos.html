@@ -291,9 +291,10 @@
         }
 
         function formatDate(dateString) {
-            const date = new Date(dateString);
-            return new Intl.DateFormat('es-CO').format(date);
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('es-CO').format(date);
         }
+
 
         function getColorForCategory(category) {
             const colors = {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinanzApp - Dashboard</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -18,19 +18,19 @@
         </div>
         
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active" data-section="overview">
+            <a href="/dashboard" class="nav-item active" data-section="overview">
                 <span class="nav-icon">🏠</span>
                 <span class="nav-text">Resumen</span>
             </a>
-            <a href="#" class="nav-item" data-section="inversiones">
+            <a href="/inversiones" class="nav-item" data-section="inversiones">
                 <span class="nav-icon">📈</span>
                 <span class="nav-text">Inversiones</span>
             </a>
-            <a href="#" class="nav-item" data-section="gastos">
+            <a href="/gastos" class="nav-item" data-section="gastos">
                 <span class="nav-icon">💸</span>
                 <span class="nav-text">Gastos</span>
             </a>
-            <a href="#" class="nav-item" data-section="analisis">
+            <a href="/analisis" class="nav-item" data-section="analisis">
                 <span class="nav-icon">📊</span>
                 <span class="nav-text">Análisis</span>
             </a>
@@ -295,13 +295,60 @@
     <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
 
-    <script src="../static/js/utils.js"></script>
-    <script src="../static/js/api.js"></script>
-    <script src="../static/js/navigation.js"></script>
-    <script src="../static/js/dashboard.js"></script>
-    <script src="../static/js/inversiones.js"></script>
-    <script src="../static/js/gastos.js"></script>
-    <script src="../static/js/chat.js"></script>
-    <script src="../static/js/main.js"></script>
+    <!-- Scripts -->
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/navigation.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/inversiones.js"></script>
+    <script src="/static/js/gastos.js"></script>
+    <script src="/static/js/chat.js"></script>
+    <script src="/static/js/main.js"></script>
+    
+    <script>
+        // Script adicional para asegurar que el logout funcione
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Dashboard cargado');
+            
+            // Verificar token al cargar
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.log('❌ No hay token, redirigiendo a login...');
+                window.location.href = '/';
+                return;
+            }
+            console.log('✅ Token encontrado');
+            
+            // Configurar botón de logout
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('🚪 Cerrando sesión...');
+                    
+                    // Eliminar token
+                    localStorage.removeItem('token');
+                    console.log('✅ Token eliminado');
+                    
+                    // Mostrar mensaje
+                    const toast = document.getElementById('toast');
+                    if (toast) {
+                        toast.textContent = 'Sesión cerrada correctamente';
+                        toast.className = 'toast success show';
+                        setTimeout(() => toast.classList.remove('show'), 2000);
+                    }
+                    
+                    // Redirigir al login
+                    setTimeout(() => {
+                        console.log('🔄 Redirigiendo a login...');
+                        window.location.href = '/';
+                    }, 1000);
+                });
+                console.log('✅ Logout configurado');
+            } else {
+                console.error('❌ Botón de logout no encontrado');
+            }
+        });
+    </script>
 </body>
 </html>

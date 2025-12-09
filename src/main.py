@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
 from jose import jwt
 from sqlmodel import SQLModel, select
 from src.routes.db_session import SessionDep
@@ -25,13 +26,13 @@ from pydantic import BaseModel
 
 load_dotenv()
 
-# Configurar Gemini (sin crear el modelo aún)
+# Configurar Gemini
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # --- CONFIGURACIÓN DE RUTAS ---
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = BASE_DIR / "templates"
-ABSOLUTE_FILE_PATH = TEMPLATES_DIR / "register.html"
+STATIC_DIR = BASE_DIR / "static"
 
 # --- CONFIGURACIÓN DEL ADMIN ---
 ADMIN_PASSWORD = "super_secure_admin_password"
@@ -42,7 +43,10 @@ SQLModel.metadata.create_all(engine)
 # Crear instancia
 app = FastAPI()
 
-# Incluir routers
+# Montar archivos estáticos (CSS, JS, imágenes)
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+# Incluir routers de API
 app.include_router(items_router)
 app.include_router(inversion_router)
 app.include_router(gasto_router)
@@ -50,10 +54,69 @@ app.include_router(analisis_router)
 
 
 # -------------------------------
-# 🔐 LOGIN
+# 📄 RUTAS PARA SERVIR ARCHIVOS HTML
+# -------------------------------
+
+@app.get("/", include_in_schema=False)
+async def serve_login():
+    """Sirve la página de login"""
+    login_path = TEMPLATES_DIR / "login.html"
+    if login_path.is_file():
+        return FileResponse(login_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Login page not found")
+
+
+@app.get("/register", include_in_schema=False)
+async def serve_register():
+    """Sirve la página de registro"""
+    register_path = TEMPLATES_DIR / "register.html"
+    if register_path.is_file():
+        return FileResponse(register_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Register page not found")
+
+
+@app.get("/dashboard", include_in_schema=False)
+async def serve_dashboard():
+    """Sirve el dashboard principal"""
+    dashboard_path = TEMPLATES_DIR / "dashboard.html"
+    if dashboard_path.is_file():
+        return FileResponse(dashboard_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Dashboard not found")
+
+
+@app.get("/inversiones", include_in_schema=False)
+async def serve_inversiones():
+    """Sirve la página de inversiones"""
+    inversiones_path = TEMPLATES_DIR / "inversiones.html"
+    if inversiones_path.is_file():
+        return FileResponse(inversiones_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Inversiones page not found")
+
+
+@app.get("/gastos", include_in_schema=False)
+async def serve_gastos():
+    """Sirve la página de gastos"""
+    gastos_path = TEMPLATES_DIR / "gastos.html"
+    if gastos_path.is_file():
+        return FileResponse(gastos_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Gastos page not found")
+
+
+@app.get("/analisis", include_in_schema=False)
+async def serve_analisis():
+    """Sirve la página de análisis"""
+    analisis_path = TEMPLATES_DIR / "analisis.html"
+    if analisis_path.is_file():
+        return FileResponse(analisis_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Analisis page not found")
+
+
+# -------------------------------
+# 🔐 LOGIN Y AUTENTICACIÓN
 # -------------------------------
 
 def encode_token(payload: dict) -> str:
+    """Codifica un payload en un token JWT"""
     return jwt.encode(payload, "my-secret", algorithm="HS256")
 
 
@@ -79,7 +142,10 @@ def login(
             }
             token = encode_token(payload)
             print(f"✅ Admin login exitoso")
-            return {"access_token": token, "token_type": "bearer"}
+            return {
+                "access_token": token,
+                "token_type": "bearer"
+            }
         else:
             print("❌ Contraseña de admin incorrecta")
             raise HTTPException(status_code=400, detail="Credenciales incorrectas")
@@ -108,7 +174,10 @@ def login(
     print(f"✅ Usuario '{user.nombre}' login exitoso")
     print(f"{'='*50}\n")
     
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
 
 
 @app.get("/users/profile", tags=['login'])
@@ -123,19 +192,14 @@ def admin_dashboard(
     user: Annotated[dict, Depends(decode_token)]
 ):
     """Endpoint solo accesible para usuarios con rol 'admin'."""
-    return {"message": f"Bienvenido al Dashboard de Administrador, {user['username']}", "rol": user['rol']}
-
-
-@app.get("/", include_in_schema=False)
-async def serve_admit_html():
-    """Sirve el archivo HTML principal."""
-    if ABSOLUTE_FILE_PATH.is_file():
-        return FileResponse(ABSOLUTE_FILE_PATH, media_type="text/html")
-    raise HTTPException(status_code=404, detail="HTML template not found")
+    return {
+        "message": f"Bienvenido al Dashboard de Administrador, {user['username']}", 
+        "rol": user['rol']
+    }
 
 
 # -------------------------------
-# 🤖 CHATBOT GEMINI (CORREGIDO)
+# 🤖 CHATBOT GEMINI
 # -------------------------------
 
 class ChatRequest(BaseModel):
@@ -144,9 +208,7 @@ class ChatRequest(BaseModel):
 
 @app.get("/chat/models", tags=["chat"])
 async def list_available_models():
-    """
-    Lista todos los modelos de Gemini disponibles para tu API key.
-    """
+    """Lista todos los modelos de Gemini disponibles para tu API key."""
     try:
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
@@ -170,7 +232,10 @@ async def list_available_models():
         return {"available_models": models_list, "total": len(models_list)}
         
     except Exception as e:
-        return {"error": str(e), "suggestion": "Verifica tu API key en https://aistudio.google.com/app/apikey"}
+        return {
+            "error": str(e), 
+            "suggestion": "Verifica tu API key en https://aistudio.google.com/app/apikey"
+        }
 
 
 @app.post("/chat", tags=["chat"])
@@ -207,3 +272,16 @@ async def chat_endpoint(req: ChatRequest):
             "error": str(e),
             "suggestion": "Intenta generar una nueva API key o verifica que no tenga restricciones"
         }
+
+
+# -------------------------------
+# 🏥 HEALTH CHECK
+# -------------------------------
+
+@app.get("/health", tags=["health"])
+async def health_check():
+    """Endpoint para verificar que el servidor está funcionando"""
+    return {
+        "status": "ok",
+        "message": "FinanzApp API is running"
+    }

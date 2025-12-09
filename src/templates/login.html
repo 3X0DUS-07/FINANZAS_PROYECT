@@ -78,7 +78,101 @@
     <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
 
-    <script src="../static/js/utils.js"></script>
-    <script src="../static/js/auth.js"></script>
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+
+        // Ocultar loading screen
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingScreen = document.getElementById('loading-screen');
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+            }, 1000);
+
+            // Verificar si ya hay token guardado
+            const savedToken = localStorage.getItem('token');
+            if (savedToken) {
+                console.log('Token encontrado, redirigiendo...');
+                window.location.href = '/dashboard';
+                return;
+            }
+
+            // Manejar submit del formulario
+            const loginForm = document.getElementById('login-form');
+            loginForm.addEventListener('submit', handleLogin);
+        });
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Deshabilitar botón mientras se procesa
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const originalText = btnText.textContent;
+            btnText.textContent = 'Iniciando...';
+            submitBtn.disabled = true;
+            
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+                
+                console.log('🔐 Intentando login con:', username);
+                console.log('📡 URL:', `${API_BASE_URL}/token`);
+                
+                const response = await fetch(`${API_BASE_URL}/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData
+                });
+                
+                console.log('📥 Response status:', response.status);
+                console.log('📥 Response ok:', response.ok);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('❌ Error response:', errorData);
+                    throw new Error(errorData.detail || 'Credenciales incorrectas');
+                }
+                
+                const data = await response.json();
+                console.log('✅ Respuesta del servidor:', data);
+                
+                // Guardar token en localStorage
+                localStorage.setItem('token', data.access_token);
+                console.log('💾 Token guardado en localStorage');
+                
+                showToast('¡Bienvenido de vuelta!', 'success');
+                
+                // Redirigir al dashboard SIN .html
+                console.log('🔄 Redirigiendo a /dashboard...');
+                
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 500);
+                
+            } catch (error) {
+                console.error('❌ Error en login:', error);
+                showToast(error.message, 'error');
+                
+                // Rehabilitar botón
+                btnText.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>

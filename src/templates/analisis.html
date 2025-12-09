@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanzApp - Análisis</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-small">
+                <span class="logo-icon">💎</span>
+                <span class="logo-text">Smart Finance</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Resumen</span>
+            </a>
+            <a href="inversiones.html" class="nav-item">
+                <span class="nav-icon">📈</span>
+                <span class="nav-text">Inversiones</span>
+            </a>
+            <a href="gastos.html" class="nav-item">
+                <span class="nav-icon">💸</span>
+                <span class="nav-text">Gastos</span>
+            </a>
+            <a href="analisis.html" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Análisis</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">👤</div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-username">Usuario</div>
+                    <div class="user-role" id="sidebar-role">user</div>
+                </div>
+            </div>
+            <button class="btn-logout" id="logout-btn">
+                <span>Cerrar Sesión</span>
+                <span>🚪</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1 class="page-title">Análisis Financiero</h1>
+                <p class="page-subtitle">Reportes detallados y tendencias</p>
+            </div>
+            <div class="header-right">
+                <select id="analysis-period" style="padding: 0.75rem 1.5rem; background: var(--bg-tertiary); border: 2px solid transparent; border-radius: 8px; color: var(--text-primary); font-weight: 600; cursor: pointer;">
+                    <option value="general">📊 Todo el tiempo</option>
+                    <option value="mensual" selected>📅 Mes actual</option>
+                    <option value="trimestral">📈 Últimos 3 meses</option>
+                    <option value="semestral">📉 Últimos 6 meses</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading-state" style="display: none;">
+            <div style="text-align: center; padding: 4rem;">
+                <div style="width: 48px; height: 48px; border: 4px solid rgba(37, 99, 235, 0.2); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem;"></div>
+                <p style="color: var(--text-secondary); font-size: 1.125rem;">Cargando análisis...</p>
+            </div>
+        </div>
+
+        <!-- Analysis Content -->
+        <div id="analysis-content">
+            <!-- Resumen Financiero -->
+            <div id="resumen-section">
+                <div style="text-align: center; margin-bottom: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                    <h2 style="font-size: 2rem; font-weight: 800; background: var(--gradient-blue); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;">
+                        Análisis Financiero
+                    </h2>
+                    <p id="periodo-text" style="font-size: 1.125rem; color: var(--text-secondary);"></p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+                    <div style="background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid rgba(255, 255, 255, 0.05); position: relative; overflow: hidden;">
+                        <div style="font-size: 48px; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; background: rgba(16, 185, 129, 0.1); border-radius: 12px;">💰</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Total Ingresos</div>
+                            <div id="stat-inversiones" style="font-size: 1.75rem; font-weight: 800; color: var(--success);">$0</div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <div style="font-size: 48px; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.1); border-radius: 12px;">💸</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Total Gastos</div>
+                            <div id="stat-gastos" style="font-size: 1.75rem; font-weight: 800; color: var(--danger);">$0</div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <div style="font-size: 48px; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; background: rgba(37, 99, 235, 0.1); border-radius: 12px;">📊</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Balance</div>
+                            <div id="stat-balance" style="font-size: 1.75rem; font-weight: 800;">$0</div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <div style="font-size: 48px; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; background: rgba(99, 102, 241, 0.1); border-radius: 12px;">🎯</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">% Ahorro</div>
+                            <div id="stat-ahorro" style="font-size: 1.75rem; font-weight: 800;">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insights -->
+                <div id="insights-container" style="background: var(--bg-secondary); border-radius: 16px; padding: 2rem; margin-bottom: 3rem; border: 1px solid rgba(255, 255, 255, 0.05);">
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        💡 Recomendaciones Inteligentes
+                    </h3>
+                    <div id="insights-list"></div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                    <!-- Top Gastos -->
+                    <div style="background: var(--bg-secondary); border-radius: 16px; padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                            🔥 Top Categorías de Gastos
+                        </h3>
+                        <div id="top-gastos-chart"></div>
+                    </div>
+
+                    <!-- Top Inversiones -->
+                    <div style="background: var(--bg-secondary); border-radius: 16px; padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                            💎 Top Fuentes de Ingresos
+                        </h3>
+                        <div id="top-inversiones-chart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tendencia Section -->
+            <div id="tendencia-section" style="background: var(--bg-secondary); border-radius: 16px; padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.05);">
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem;">
+                    📈 Tendencia Mensual
+                </h3>
+                <div id="tendencia-chart"></div>
+                <div style="display: flex; justify-content: center; gap: 3rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 24px; height: 12px; border-radius: 4px; background: linear-gradient(135deg, #10b981 0%, #34d399 100%);"></div>
+                        <span style="font-size: 0.875rem; color: var(--text-secondary);">Ingresos</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 24px; height: 12px; border-radius: 4px; background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);"></div>
+                        <span style="font-size: 0.875rem; color: var(--text-secondary);">Gastos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        let token = null;
+        let currentUser = null;
+        let currentPeriod = 'mensual';
+
+        // Verificar autenticación
+        function checkAuth() {
+            token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return false;
+            }
+            return true;
+        }
+
+        // Fetch autenticado
+        async function authenticatedFetch(url, options = {}) {
+            return fetch(url, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Formatear moneda
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Obtener nombre de mes
+        function getNombreMes(numeroMes) {
+            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            return meses[numeroMes - 1];
+        }
+
+        // Cargar perfil
+        async function loadUserProfile() {
+            try {
+                const response = await authenticatedFetch(`${API_BASE_URL}/users/profile`);
+                if (!response.ok) throw new Error('Error al cargar perfil');
+                currentUser = await response.json();
+                document.getElementById('sidebar-username').textContent = currentUser.username;
+                document.getElementById('sidebar-role').textContent = currentUser.rol || 'user';
+            } catch (error) {
+                localStorage.removeItem('token');
+                window.location.href = '/';
+            }
+        }
+
+        // Cargar análisis
+        async function loadAnalisis() {
+            const period = document.getElementById('analysis-period').value;
+            currentPeriod = period;
+            
+            document.getElementById('loading-state').style.display = 'block';
+            document.getElementById('analysis-content').style.display = 'none';
+
+            try {
+                let resumen, gastosPorTipo, inversionesPorTipo, tendencia;
+
+                if (period === 'general') {
+                    // Todo el tiempo
+                    const resumenRes = await authenticatedFetch(`${API_BASE_URL}/analisis/resumen-general`);
+                    resumen = await resumenRes.json();
+                    
+                    const gastosRes = await authenticatedFetch(`${API_BASE_URL}/analisis/gastos-por-tipo`);
+                    gastosPorTipo = await gastosRes.json();
+                    
+                    const invRes = await authenticatedFetch(`${API_BASE_URL}/analisis/inversiones-por-tipo`);
+                    inversionesPorTipo = await invRes.json();
+                    
+                    const tendRes = await authenticatedFetch(`${API_BASE_URL}/analisis/tendencia-mensual?meses=6`);
+                    tendencia = await tendRes.json();
+                    
+                    document.getElementById('periodo-text').textContent = 'Todo el tiempo';
+                    
+                } else if (period === 'mensual') {
+                    // Mes actual
+                    const now = new Date();
+                    const mes = now.getMonth() + 1;
+                    const anio = now.getFullYear();
+                    
+                    const resumenRes = await authenticatedFetch(`${API_BASE_URL}/analisis/resumen-mensual?mes=${mes}&anio=${anio}`);
+                    resumen = await resumenRes.json();
+                    
+                    const gastosRes = await authenticatedFetch(`${API_BASE_URL}/analisis/gastos-por-tipo?mes=${mes}&anio=${anio}`);
+                    gastosPorTipo = await gastosRes.json();
+                    
+                    const invRes = await authenticatedFetch(`${API_BASE_URL}/analisis/inversiones-por-tipo?mes=${mes}&anio=${anio}`);
+                    inversionesPorTipo = await invRes.json();
+                    
+                    const tendRes = await authenticatedFetch(`${API_BASE_URL}/analisis/tendencia-mensual?meses=3`);
+                    tendencia = await tendRes.json();
+                    
+                    document.getElementById('periodo-text').textContent = `${getNombreMes(mes)} ${anio}`;
+                    
+                } else if (period === 'trimestral') {
+                    // Últimos 3 meses
+                    const tendRes = await authenticatedFetch(`${API_BASE_URL}/analisis/tendencia-mensual?meses=3`);
+                    tendencia = await tendRes.json();
+                    
+                    // Calcular resumen sumando los 3 meses
+                    resumen = {
+                        total_inversiones: tendencia.reduce((sum, m) => sum + m.total_inversiones, 0),
+                        total_gastos: tendencia.reduce((sum, m) => sum + m.total_gastos, 0),
+                        balance: tendencia.reduce((sum, m) => sum + m.balance, 0),
+                        periodo: 'Últimos 3 meses'
+                    };
+                    resumen.porcentaje_ahorro = resumen.total_inversiones > 0 
+                        ? ((resumen.balance / resumen.total_inversiones) * 100).toFixed(2)
+                        : 0;
+                    
+                    const gastosRes = await authenticatedFetch(`${API_BASE_URL}/analisis/gastos-por-tipo`);
+                    gastosPorTipo = await gastosRes.json();
+                    
+                    const invRes = await authenticatedFetch(`${API_BASE_URL}/analisis/inversiones-por-tipo`);
+                    inversionesPorTipo = await invRes.json();
+                    
+                    document.getElementById('periodo-text').textContent = 'Últimos 3 meses';
+                    
+                } else if (period === 'semestral') {
+                    // Últimos 6 meses
+                    const tendRes = await authenticatedFetch(`${API_BASE_URL}/analisis/tendencia-mensual?meses=6`);
+                    tendencia = await tendRes.json();
+                    
+                    resumen = {
+                        total_inversiones: tendencia.reduce((sum, m) => sum + m.total_inversiones, 0),
+                        total_gastos: tendencia.reduce((sum, m) => sum + m.total_gastos, 0),
+                        balance: tendencia.reduce((sum, m) => sum + m.balance, 0),
+                        periodo: 'Últimos 6 meses'
+                    };
+                    resumen.porcentaje_ahorro = resumen.total_inversiones > 0 
+                        ? ((resumen.balance / resumen.total_inversiones) * 100).toFixed(2)
+                        : 0;
+                    
+                    const gastosRes = await authenticatedFetch(`${API_BASE_URL}/analisis/gastos-por-tipo`);
+                    gastosPorTipo = await gastosRes.json();
+                    
+                    const invRes = await authenticatedFetch(`${API_BASE_URL}/analisis/inversiones-por-tipo`);
+                    inversionesPorTipo = await invRes.json();
+                    
+                    document.getElementById('periodo-text').textContent = 'Últimos 6 meses';
+                }
+
+                // Renderizar todo
+                renderResumen(resumen);
+                renderInsights(resumen);
+                renderTopGastos(gastosPorTipo);
+                renderTopInversiones(inversionesPorTipo);
+                renderTendencia(tendencia);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error al cargar análisis', 'error');
+            } finally {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('analysis-content').style.display = 'block';
+            }
+        }
+
+        // Renderizar resumen
+        function renderResumen(resumen) {
+            document.getElementById('stat-inversiones').textContent = formatCurrency(resumen.total_inversiones);
+            document.getElementById('stat-gastos').textContent = formatCurrency(resumen.total_gastos);
+            
+            const balanceEl = document.getElementById('stat-balance');
+            balanceEl.textContent = formatCurrency(resumen.balance);
+            balanceEl.style.color = resumen.balance >= 0 ? 'var(--success)' : 'var(--danger)';
+            
+            const ahorroEl = document.getElementById('stat-ahorro');
+            ahorroEl.textContent = `${resumen.porcentaje_ahorro}%`;
+            ahorroEl.style.color = resumen.porcentaje_ahorro >= 20 ? 'var(--success)' : 
+                                   resumen.porcentaje_ahorro >= 10 ? 'var(--warning)' : 'var(--danger)';
+        }
+
+        // Renderizar insights
+        function renderInsights(resumen) {
+            const insights = [];
+
+            if (resumen.porcentaje_ahorro >= 20) {
+                insights.push({ icon: '✅', type: 'success', msg: '¡Excelente! Estás ahorrando más del 20% de tus ingresos.' });
+            } else if (resumen.porcentaje_ahorro >= 10) {
+                insights.push({ icon: '⚠️', type: 'warning', msg: 'Estás ahorrando un porcentaje moderado. Intenta reducir gastos innecesarios.' });
+            } else if (resumen.porcentaje_ahorro < 0) {
+                insights.push({ icon: '❌', type: 'danger', msg: '¡Alerta! Tus gastos superan tus ingresos. Revisa tu presupuesto urgentemente.' });
+            } else {
+                insights.push({ icon: '💡', type: 'info', msg: 'Puedes mejorar tu ahorro. La meta recomendada es 20%.' });
+            }
+
+            if (resumen.balance > 0) {
+                insights.push({ icon: '📈', type: 'success', msg: `Tu balance es positivo. Considera invertir ${formatCurrency(resumen.balance * 0.5)}.` });
+            }
+
+            let html = '';
+            insights.forEach(ins => {
+                const bgColors = {
+                    success: 'rgba(16, 185, 129, 0.1)',
+                    warning: 'rgba(245, 158, 11, 0.1)',
+                    danger: 'rgba(239, 68, 68, 0.1)',
+                    info: 'rgba(37, 99, 235, 0.1)'
+                };
+                const borderColors = {
+                    success: 'var(--success)',
+                    warning: 'var(--warning)',
+                    danger: 'var(--danger)',
+                    info: 'var(--info)'
+                };
+
+                html += `
+                    <div style="padding: 1rem; border-radius: 12px; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; border-left: 4px solid ${borderColors[ins.type]}; background: ${bgColors[ins.type]};">
+                        <span style="font-size: 1.5rem;">${ins.icon}</span>
+                        <span style="flex: 1; color: var(--text-primary); line-height: 1.5;">${ins.msg}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('insights-list').innerHTML = html;
+        }
+
+        // Renderizar top gastos
+        function renderTopGastos(data) {
+            const container = document.getElementById('top-gastos-chart');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No hay datos disponibles</div>';
+                return;
+            }
+
+            const top3 = data.slice(0, 3);
+            const medals = ['🥇', '🥈', '🥉'];
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 1.25rem;">';
+            top3.forEach((item, idx) => {
+                html += `
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 12px; transition: all 0.3s;">
+                        <span style="font-size: 2rem; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">${medals[idx]}</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--text-primary); text-transform: capitalize; margin-bottom: 0.25rem;">${item.tipo_gasto}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.875rem;">${formatCurrency(item.total)} (${item.porcentaje.toFixed(1)}%)</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        // Renderizar top inversiones
+        function renderTopInversiones(data) {
+            const container = document.getElementById('top-inversiones-chart');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No hay datos disponibles</div>';
+                return;
+            }
+
+            const top3 = data.slice(0, 3);
+            const medals = ['🥇', '🥈', '🥉'];
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 1.25rem;">';
+            top3.forEach((item, idx) => {
+                html += `
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 12px;">
+                        <span style="font-size: 2rem; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">${medals[idx]}</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--text-primary); text-transform: capitalize; margin-bottom: 0.25rem;">${item.tipo_inversion}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.875rem;">${formatCurrency(item.total)} (${item.porcentaje.toFixed(1)}%)</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        // Renderizar tendencia
+        function renderTendencia(data) {
+            const container = document.getElementById('tendencia-chart');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No hay datos disponibles</div>';
+                return;
+            }
+
+            const maxValue = Math.max(...data.map(m => Math.max(m.total_inversiones, m.total_gastos)));
+            
+            let html = '<div style="display: flex; gap: 1rem; padding: 1.5rem; overflow-x: auto;">';
+            
+            data.forEach(mes => {
+                const invHeight = maxValue > 0 ? (mes.total_inversiones / maxValue) * 100 : 0;
+                const gastoHeight = maxValue > 0 ? (mes.total_gastos / maxValue) * 100 : 0;
+                const balanceClass = mes.balance >= 0 ? 'var(--success)' : 'var(--danger)';
+                
+                html += `
+                    <div style="min-width: 100px; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                        <div style="height: 200px; display: flex; align-items: flex-end; gap: 0.5rem;">
+                            <div style="width: 40px; border-radius: 8px 8px 0 0; position: relative; transition: all 0.8s; height: ${invHeight}%; background: linear-gradient(180deg, #10b981 0%, #34d399 100%);"></div>
+                            <div style="width: 40px; border-radius: 8px 8px 0 0; position: relative; transition: all 0.8s; height: ${gastoHeight}%; background: linear-gradient(180deg, #ef4444 0%, #f87171 100%);"></div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">${mes.periodo}</div>
+                            <div style="font-size: 0.875rem; font-weight: 700; color: ${balanceClass};">
+                                ${mes.balance >= 0 ? '+' : ''}${formatCurrency(mes.balance)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        // Evento cambio periodo
+        document.getElementById('analysis-period').addEventListener('change', loadAnalisis);
+        // Evento logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        });
+        // Inicialización
+        (async () => {
+            if (checkAuth()) {
+                await loadUserProfile();
+                await loadAnalisis();
+            }
+        })();
+    </script>
+</body>
+</html>

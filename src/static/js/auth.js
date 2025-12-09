@@ -8,12 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Verificar si ya hay token guardado
     const savedToken = localStorage.getItem('token');
     if (savedToken) {
-        // Redirigir al dashboard
-        window.location.href = '/dashboard';
+        window.location.href = '/dashboard'; 
         return;
     }
     
-    // Manejar submit del formulario
     loginForm.addEventListener('submit', handleLogin);
 });
 
@@ -47,7 +45,7 @@ async function handleLogin(event) {
         
         showToast('¡Bienvenido de vuelta!', 'success');
         
-        // Redirigir al dashboard después de un breve delay
+        // Redirigir al dashboard después del aviso
         setTimeout(() => {
             window.location.href = '/dashboard';
         }, 500);

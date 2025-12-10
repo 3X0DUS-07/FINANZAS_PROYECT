@@ -161,6 +161,33 @@
         </div>
     </main>
 
+    <!-- Botón flotante del chatbot -->
+    <button class="btn-chat-float" id="chat-toggle-btn" title="Asistente IA">
+        <span>🤖</span>
+    </button>
+
+    <!-- Modal Chatbot -->
+    <div id="chat-modal" class="modal-chat">
+        <div class="chat-modal-content">
+            <div class="chat-modal-header">
+                <h3>🤖 Asistente Financiero IA</h3>
+                <button class="chat-modal-close" id="chat-close-btn">&times;</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message bot-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-text">¡Hola! Soy tu asistente financiero IA. ¿Necesitas ayuda con tus inversiones?</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Escribe tu pregunta aquí..." class="chat-input">
+                <button id="chat-send" class="btn-send">Enviar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal para agregar/editar inversión -->
     <div id="inversion-modal" class="modal">
         <div class="modal-content">

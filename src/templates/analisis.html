@@ -18,7 +18,7 @@
         </div>
         
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active" onclick="window.location.href='/dashboard'; return false;">
+            <a href="#" class="nav-item" onclick="window.location.href='/dashboard'; return false;">
                 <span class="nav-icon">🏠</span>
                 <span class="nav-text">Resumen</span>
             </a>
@@ -30,7 +30,7 @@
                 <span class="nav-icon">💸</span>
                 <span class="nav-text">Gastos</span>
             </a>
-            <a href="#" class="nav-item" onclick="window.location.href='/analisis'; return false;">
+            <a href="#" class="nav-item active" onclick="window.location.href='/analisis'; return false;">
                 <span class="nav-icon">📊</span>
                 <span class="nav-text">Análisis</span>
             </a>
@@ -169,6 +169,34 @@
                 </div>
             </div>
         </div>
+    </main>
+
+    <!-- Botón flotante del chatbot -->
+    <button class="btn-chat-float" id="chat-toggle-btn" title="Asistente IA">
+        <span>🤖</span>
+    </button>
+
+    <!-- Modal Chatbot -->
+    <div id="chat-modal" class="modal-chat">
+        <div class="chat-modal-content">
+            <div class="chat-modal-header">
+                <h3>🤖 Asistente Financiero IA</h3>
+                <button class="chat-modal-close" id="chat-close-btn">&times;</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message bot-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-text">¡Hola! Soy tu asistente financiero IA. ¿Necesitas ayuda con tu análisis?</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Escribe tu pregunta aquí..." class="chat-input">
+                <button id="chat-send" class="btn-send">Enviar</button>
+            </div>
+        </div>
+    </div>
     </main>
 
     <!-- Toast -->

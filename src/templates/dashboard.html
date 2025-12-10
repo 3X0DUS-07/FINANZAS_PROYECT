@@ -18,19 +18,19 @@
         </div>
         
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active" onclick="window.location.href='/dashboard'; return false;">
+            <a href="/dashboard" class="nav-item active">
                 <span class="nav-icon">🏠</span>
                 <span class="nav-text">Resumen</span>
             </a>
-            <a href="#" class="nav-item" onclick="window.location.href='/inversiones'; return false;">
+            <a href="/inversiones" class="nav-item">
                 <span class="nav-icon">📈</span>
                 <span class="nav-text">Inversiones</span>
             </a>
-            <a href="#" class="nav-item" onclick="window.location.href='/gastos'; return false;">
+            <a href="/gastos" class="nav-item">
                 <span class="nav-icon">💸</span>
                 <span class="nav-text">Gastos</span>
             </a>
-            <a href="#" class="nav-item" onclick="window.location.href='/analisis'; return false;">
+            <a href="/analisis" class="nav-item">
                 <span class="nav-icon">📊</span>
                 <span class="nav-text">Análisis</span>
             </a>
@@ -66,10 +66,6 @@
                         <span class="stat-value">$0</span>
                     </div>
                 </div>
-                <!-- Botón flotante del chatbot -->
-                <button class="btn-chat-float" id="chat-toggle-btn" title="Asistente IA">
-                    <span>🤖</span>
-                </button>
             </div>
         </header>
 
@@ -131,31 +127,36 @@
 
         <!-- Quick Actions -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-            <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='/inversiones'">
+            <a href="/inversiones" class="stat-card" style="cursor: pointer; text-decoration: none;">
                 <div class="stat-card-icon">➕</div>
                 <div class="stat-card-content">
                     <div class="stat-card-label">Nueva Inversión</div>
                     <div style="color: var(--text-secondary); font-size: 0.875rem;">Registra un nuevo ingreso</div>
                 </div>
-            </div>
+            </a>
             
-            <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='/gastos'">
+            <a href="/gastos" class="stat-card" style="cursor: pointer; text-decoration: none;">
                 <div class="stat-card-icon">➖</div>
                 <div class="stat-card-content">
                     <div class="stat-card-label">Nuevo Gasto</div>
                     <div style="color: var(--text-secondary); font-size: 0.875rem;">Registra un nuevo egreso</div>
                 </div>
-            </div>
+            </a>
             
-            <div class="stat-card" style="cursor: pointer;" onclick="window.location.href='/analisis'">
+            <a href="/analisis" class="stat-card" style="cursor: pointer; text-decoration: none;">
                 <div class="stat-card-icon">📊</div>
                 <div class="stat-card-content">
                     <div class="stat-card-label">Ver Análisis</div>
                     <div style="color: var(--text-secondary); font-size: 0.875rem;">Reportes detallados</div>
                 </div>
-            </div>
+            </a>
         </div>
     </main>
+
+    <!-- Botón flotante del chatbot -->
+    <button class="btn-chat-float" id="chat-toggle-btn" title="Asistente IA">
+        <span>🤖</span>
+    </button>
 
     <!-- Modal Chatbot -->
     <div id="chat-modal" class="modal-chat">
@@ -182,331 +183,27 @@
     <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
 
+    <!-- Scripts -->
+    <script src="/static/js/config.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/chat.js"></script>
     <script>
-        const API_BASE_URL = 'http://127.0.0.1:8000';
-        let token = null;
-        let currentUser = null;
-
-        // Verificar autenticación
-        function checkAuth() {
-            token = localStorage.getItem('token');
-            if (!token) {
-                console.log('❌ No hay token, redirigiendo a login...');
-                window.location.href = '/';
-                return false;
-            }
-            console.log('✅ Token encontrado');
-            return true;
-        }
-
-        // Fetch autenticado
-        async function authenticatedFetch(url, options = {}) {
-            return fetch(url, {
-                ...options,
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                }
-            });
-        }
-
-        // Toast
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-            toast.textContent = message;
-            toast.className = `toast ${type} show`;
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // Formatear moneda
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP',
-                minimumFractionDigits: 0
-            }).format(amount);
-        }
-
-        // Obtener color por categoría
-        function getColorForCategory(category) {
-            const colors = {
-                'comida': '#10b981',
-                'transporte': '#3b82f6',
-                'servicios': '#f59e0b',
-                'entretenimiento': '#8b5cf6',
-                'salud': '#ef4444',
-                'educación': '#6366f1',
-                'ropa': '#ec4899',
-                'hogar': '#14b8a6',
-                'trabajo': '#6366f1',
-                'negocio': '#14b8a6',
-                'arriendo': '#ec4899',
-                'default': '#64748b'
-            };
-            return colors[category.toLowerCase()] || colors['default'];
-        }
-
-        // Cargar perfil
-        async function loadUserProfile() {
-            try {
-                const response = await authenticatedFetch(`${API_BASE_URL}/users/profile`);
-                if (!response.ok) throw new Error('Error al cargar perfil');
-                currentUser = await response.json();
-                
-                const usernameEl = document.getElementById('sidebar-username');
-                const roleEl = document.getElementById('sidebar-role');
-                
-                if (usernameEl) usernameEl.textContent = currentUser.username;
-                if (roleEl) roleEl.textContent = currentUser.rol || 'user';
-                
-                return currentUser;
-            } catch (error) {
-                console.error('❌ Error cargando perfil:', error);
-                localStorage.removeItem('token');
-                window.location.href = '/';
-            }
-        }
-
-        // Cargar datos del dashboard
-        async function loadDashboardData() {
-            try {
-                const resumenResponse = await authenticatedFetch(`${API_BASE_URL}/analisis/resumen-general`);
-                
-                if (resumenResponse.ok) {
-                    const resumen = await resumenResponse.json();
-                    
-                    document.getElementById('total-inversiones').textContent = formatCurrency(resumen.total_inversiones);
-                    document.getElementById('total-gastos').textContent = formatCurrency(resumen.total_gastos);
-                    document.getElementById('balance').textContent = formatCurrency(resumen.balance);
-                    document.getElementById('porcentaje-ahorro').textContent = `${resumen.porcentaje_ahorro}%`;
-                    
-                    const headerBalance = document.getElementById('header-balance');
-                    if (headerBalance) {
-                        headerBalance.querySelector('.stat-value').textContent = formatCurrency(resumen.balance);
-                    }
-                    
-                    const ahorroBadge = document.getElementById('ahorro-badge');
-                    ahorroBadge.textContent = `${resumen.porcentaje_ahorro}% de ahorro`;
-                    ahorroBadge.className = 'stat-card-change';
-                    if (resumen.porcentaje_ahorro > 0) {
-                        ahorroBadge.classList.add('positive');
-                    } else {
-                        ahorroBadge.classList.add('negative');
-                    }
-                }
-                
-                const gastosResponse = await authenticatedFetch(`${API_BASE_URL}/analisis/gastos-por-tipo`);
-                if (gastosResponse.ok) {
-                    const gastos = await gastosResponse.json();
-                    renderGastosChart(gastos);
-                }
-                
-                const inversionesResponse = await authenticatedFetch(`${API_BASE_URL}/analisis/inversiones-por-tipo`);
-                if (inversionesResponse.ok) {
-                    const inversiones = await inversionesResponse.json();
-                    renderInversionesChart(inversiones);
-                }
-                
-            } catch (error) {
-                console.error('Error al cargar datos:', error);
-            }
-        }
-
-        // Renderizar gráfico de gastos
-        function renderGastosChart(data) {
-            const chartContainer = document.getElementById('gastos-chart');
-            
-            if (!data || data.length === 0) {
-                chartContainer.innerHTML = '<div class="no-data">No hay datos disponibles</div>';
-                return;
-            }
-            
-            let html = '<div class="chart-bars" style="padding: 20px;">';
-            
-            data.forEach(item => {
-                const percentage = item.porcentaje;
-                const color = getColorForCategory(item.tipo_gasto);
-                
-                html += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="font-weight: 600; text-transform: capitalize;">${item.tipo_gasto}</span>
-                            <span style="color: var(--text-secondary);">${formatCurrency(item.total)} (${percentage.toFixed(1)}%)</span>
-                        </div>
-                        <div style="background: var(--bg-dark); height: 24px; border-radius: 12px; overflow: hidden;">
-                            <div style="background: ${color}; height: 100%; width: ${percentage}%; transition: width 1s ease;"></div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            chartContainer.innerHTML = html;
-        }
-
-        // Renderizar gráfico de inversiones
-        function renderInversionesChart(data) {
-            const chartContainer = document.getElementById('inversiones-chart');
-            
-            if (!data || data.length === 0) {
-                chartContainer.innerHTML = '<div class="no-data">No hay datos disponibles</div>';
-                return;
-            }
-            
-            let html = '<div class="chart-bars" style="padding: 20px;">';
-            
-            data.forEach(item => {
-                const percentage = item.porcentaje;
-                const color = getColorForCategory(item.tipo_inversion);
-                
-                html += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="font-weight: 600; text-transform: capitalize;">${item.tipo_inversion}</span>
-                            <span style="color: var(--text-secondary);">${formatCurrency(item.total)} (${percentage.toFixed(1)}%)</span>
-                        </div>
-                        <div style="background: var(--bg-dark); height: 24px; border-radius: 12px; overflow: hidden;">
-                            <div style="background: ${color}; height: 100%; width: ${percentage}%; transition: width 1s ease;"></div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            chartContainer.innerHTML = html;
-        }
-
-        // Configurar chatbot
-        function setupChatbot() {
-            const chatModal = document.getElementById('chat-modal');
-            const chatToggleBtn = document.getElementById('chat-toggle-btn');
-            const chatCloseBtn = document.getElementById('chat-close-btn');
-            const chatSendBtn = document.getElementById('chat-send');
-            const chatInput = document.getElementById('chat-input');
-            
-            if (!chatModal || !chatToggleBtn) return;
-            
-            chatToggleBtn.addEventListener('click', () => {
-                chatModal.classList.add('active');
-                chatInput.focus();
-            });
-            
-            if (chatCloseBtn) {
-                chatCloseBtn.addEventListener('click', () => {
-                    chatModal.classList.remove('active');
-                });
-            }
-            
-            if (chatSendBtn) {
-                chatSendBtn.addEventListener('click', sendChatMessage);
-            }
-            
-            if (chatInput) {
-                chatInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        sendChatMessage();
-                    }
-                });
-            }
-            
-            chatModal.addEventListener('click', (e) => {
-                if (e.target === chatModal) {
-                    chatModal.classList.remove('active');
-                }
-            });
-        }
-
-        async function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-            
-            if (!message) return;
-            
-            addChatMessage(message, 'user');
-            input.value = '';
-            input.disabled = true;
-            
-            try {
-                const response = await fetch(`${API_BASE_URL}/chat`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ message })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Error en el chat');
-                }
-                
-                const data = await response.json();
-                
-                if (data.error) {
-                    addChatMessage(`Error: ${data.error}. ${data.suggestion || ''}`, 'bot');
-                } else {
-                    addChatMessage(data.reply, 'bot');
-                }
-                
-            } catch (error) {
-                addChatMessage('Lo siento, hubo un error procesando tu mensaje. Por favor intenta de nuevo.', 'bot');
-            } finally {
-                input.disabled = false;
-                input.focus();
-            }
-        }
-
-        function addChatMessage(text, type) {
-            const messagesContainer = document.getElementById('chat-messages');
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `chat-message ${type}-message`;
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.textContent = type === 'bot' ? '🤖' : '👤';
-            
-            const content = document.createElement('div');
-            content.className = 'message-content';
-            
-            const textDiv = document.createElement('div');
-            textDiv.className = 'message-text';
-            textDiv.textContent = text;
-            
-            content.appendChild(textDiv);
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(content);
-            
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Logout
-        function handleLogout() {
-            console.log('🚪 Cerrando sesión...');
-            localStorage.removeItem('token');
-            showToast('Sesión cerrada correctamente', 'success');
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 500);
-        }
-
-        // Inicialización
+        // Inicialización del dashboard
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 Dashboard cargado');
+            console.log('🚀 Inicializando Dashboard...');
             
             if (!checkAuth()) return;
             
             await loadUserProfile();
             setupChatbot();
-            loadDashboardData();
+            await loadDashboardData();
             
             const logoutBtn = document.getElementById('logout-btn');
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', handleLogout);
-                console.log('✅ Logout configurado');
             }
+            
+            console.log('✅ Dashboard inicializado');
         });
     </script>
 </body>

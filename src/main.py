@@ -110,6 +110,14 @@ async def serve_analisis():
         return FileResponse(analisis_path, media_type="text/html")
     raise HTTPException(status_code=404, detail="Analisis page not found")
 
+@app.get("/admin-dashboard", include_in_schema=False)
+async def serve_admin_dashboard():
+    """Sirve el panel de administración"""
+    admin_path = TEMPLATES_DIR / "admin-dashboard.html"
+    if admin_path.is_file():
+        return FileResponse(admin_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Admin dashboard not found")
+
 
 # -------------------------------
 # 🔐 LOGIN Y AUTENTICACIÓN

@@ -8,6 +8,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Pantalla de Acceso Denegado -->
+    <div id="access-denied-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-primary); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="text-align: center; max-width: 500px; padding: 3rem;">
+            <div style="font-size: 8rem; margin-bottom: 2rem; animation: shake 0.5s;">🚫</div>
+            <h1 style="font-size: 2.5rem; font-weight: 800; background: var(--gradient-danger); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem;">
+                Acceso Denegado
+            </h1>
+            <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                No tienes permisos de administrador para acceder a esta página.
+            </p>
+            <div style="padding: 1.5rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger); border-radius: 12px; margin-bottom: 2rem;">
+                <p style="color: var(--danger); font-weight: 600; margin-bottom: 0.5rem;">⚠️ Acceso Restringido</p>
+                <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                    Esta área está reservada únicamente para administradores del sistema. Si crees que deberías tener acceso, contacta con un administrador.
+                </p>
+            </div>
+            <button onclick="window.location.href='/dashboard'" style="padding: 1rem 2rem; background: var(--gradient-blue); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 1rem; transition: all 0.3s;">
+                ← Volver al Dashboard
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+        
+        #main-content-wrapper.blocked {
+            filter: blur(20px);
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
+
+    <!-- Main Content Wrapper -->
+    <div id="main-content-wrapper">
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -62,7 +100,7 @@
         </header>
 
         <!-- Stats Cards -->
-        <div class="cards-grid" style="margin-bottom: 2rem;">
+        <div class="cards-grid" style="margin-bottom: 2rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
             <div class="stat-card stat-card-primary">
                 <div class="stat-card-icon">👥</div>
                 <div class="stat-card-content">
@@ -87,15 +125,6 @@
                     <div class="stat-card-label">Administradores</div>
                     <div class="stat-card-value" id="stat-admins">0</div>
                     <div class="stat-card-change">Con privilegios</div>
-                </div>
-            </div>
-            
-            <div class="stat-card stat-card-warning">
-                <div class="stat-card-icon">📅</div>
-                <div class="stat-card-content">
-                    <div class="stat-card-label">Nuevos (Este Mes)</div>
-                    <div class="stat-card-value" id="stat-nuevos">0</div>
-                    <div class="stat-card-change">Registros recientes</div>
                 </div>
             </div>
         </div>
@@ -236,6 +265,7 @@
 
     <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
+    </div> <!-- Cierre de main-content-wrapper -->
 
     <script>
         const API_BASE_URL = 'http://127.0.0.1:8000';
@@ -299,9 +329,9 @@
                 
                 // Verificar que sea admin
                 if (currentUser.rol !== 'admin') {
-                    showToast('No tienes permisos de administrador', 'error');
-                    setTimeout(() => window.location.href = '/dashboard', 2000);
-                    return;
+                    console.warn('⚠️ Usuario sin permisos de admin detectado');
+                    showAccessDenied();
+                    return null;
                 }
                 
                 document.getElementById('sidebar-username').textContent = currentUser.username;
@@ -313,6 +343,21 @@
                 localStorage.removeItem('token');
                 window.location.href = '/';
             }
+        }
+
+        function showAccessDenied() {
+            // Ocultar contenido principal y bloquear interacción
+            const mainWrapper = document.getElementById('main-content-wrapper');
+            mainWrapper.classList.add('blocked');
+            
+            // Mostrar pantalla de acceso denegado
+            const deniedScreen = document.getElementById('access-denied-screen');
+            deniedScreen.style.display = 'flex';
+            
+            // Prevenir cualquier interacción
+            document.body.style.overflow = 'hidden';
+            
+            console.log('🚫 Acceso denegado - Pantalla de bloqueo activada');
         }
 
         async function loadUsers() {
@@ -342,13 +387,11 @@
             const total = allUsers.length;
             const admins = allUsers.filter(u => u.rol === 'admin').length;
             const activos = allUsers.length; // Todos se consideran activos
-            const nuevos = 0; // Simplificado, no hay campo de fecha de creación
             
             document.getElementById('total-usuarios').textContent = total;
             document.getElementById('stat-total').textContent = total;
             document.getElementById('stat-activos').textContent = activos;
             document.getElementById('stat-admins').textContent = admins;
-            document.getElementById('stat-nuevos').textContent = nuevos;
             
             console.log('📊 Estadísticas actualizadas');
         }
@@ -632,7 +675,14 @@
             
             if (!checkAuth()) return;
             
-            await loadUserProfile();
+            const profile = await loadUserProfile();
+            
+            // Si no es admin, no continuar con la carga
+            if (!profile) {
+                console.log('❌ Perfil no válido, deteniendo carga');
+                return;
+            }
+            
             await loadUsers();
 
             // Event Listeners

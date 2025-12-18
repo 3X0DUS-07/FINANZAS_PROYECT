@@ -53,9 +53,9 @@ app.include_router(gasto_router)
 app.include_router(analisis_router)
 
 
-# -------------------------------
-# 📄 RUTAS PARA SERVIR ARCHIVOS HTML
-# -------------------------------
+
+# RUTAS PARA SERVIR ARCHIVOS HTML
+
 
 @app.get("/", include_in_schema=False)
 async def serve_login():
@@ -119,9 +119,8 @@ async def serve_admin_dashboard():
     raise HTTPException(status_code=404, detail="Admin dashboard not found")
 
 
-# -------------------------------
-# 🔐 LOGIN Y AUTENTICACIÓN
-# -------------------------------
+# LOGIN Y AUTENTICACIÓN
+
 
 def encode_token(payload: dict) -> str:
     """Codifica un payload en un token JWT"""
@@ -206,9 +205,7 @@ def admin_dashboard(
     }
 
 
-# -------------------------------
-# 🤖 CHATBOT GEMINI
-# -------------------------------
+# CHATBOT GEMINI
 
 class ChatRequest(BaseModel):
     message: str
@@ -248,39 +245,54 @@ async def list_available_models():
 
 @app.post("/chat", tags=["chat"])
 async def chat_endpoint(req: ChatRequest):
-    """
-    Chat simple con Gemini 2.5 Flash (modelo estable y rápido).
-    No guarda historial.
-    """
     try:
-        # Verificar que la API key esté configurada
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
-            return {"error": "API key no configurada en .env"}
+            return {"error": "API key no configurada"}
         
-        # Usar Gemini 2.5 Flash (modelo estable y rápido)
-        model_name = "models/gemini-2.5-flash"
+        model = genai.GenerativeModel("models/gemini-2.5-flash")
         
-        temp_model = genai.GenerativeModel(model_name)
-        response = temp_model.generate_content(
-            req.message,
+        # Sistema prompt para respuestas concisas pero completas
+        system_prompt = """Eres un asistente financiero experto y amigable. 
+        Proporciona respuestas claras, estructuradas pero resumidas para no saturar al usuario. 
+        Si la respuesta es larga, organízala con bullets o numeración.
+        Siempre termina con un punto o pregunta."""
+        
+        full_message = f"{system_prompt}\n\nUsuario: {req.message}"
+        
+        response = model.generate_content(
+            full_message,
             generation_config=genai.GenerationConfig(
                 temperature=0.7,
-                max_output_tokens=500
+                max_output_tokens=2048,
+                top_p=0.95,
+                top_k=40
             )
         )
         
+        reply = response.text
+        
+        # Detectar truncamiento
+        is_truncated = (
+            hasattr(response.candidates[0], 'finish_reason') and
+            response.candidates[0].finish_reason.name == "MAX_TOKENS"
+        ) or not reply.strip()[-1] in '.!?'
+        
+        if is_truncated:
+            reply += "\n\n💡 *La respuesta fue resumida. ¿Quieres más detalles sobre algún punto específico?*"
+        
         return {
-            "reply": response.text,
-            "model_used": model_name
+            "reply": reply,
+            "model_used": "gemini-2.5-flash",
+            "truncated": is_truncated
         }
         
     except Exception as e:
+        print(f"❌ Error en chat: {e}")
         return {
-            "error": str(e),
-            "suggestion": "Intenta generar una nueva API key o verifica que no tenga restricciones"
+            "error": "Error al procesar mensaje",
+            "suggestion": "Intenta reformular tu pregunta"
         }
-
 
 # -------------------------------
 # 🏥 HEALTH CHECK
